@@ -39,7 +39,7 @@ function filterByManualMarking(
   args: CoreArgs
 ): ManualFilterResult {
   const parsedComments = getParsedComments(args.srcFile);
-  const overrideSourceLng = args.sourceOverride.get(args.targetLng);
+  const overrideSourceLng = args.sourceOverride?.get(args.targetLng);
 
   const toTranslate: TSet = new Map();
   const toSkip: TSet = new Map();

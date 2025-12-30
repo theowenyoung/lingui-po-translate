@@ -12,7 +12,7 @@ test("performance of --help", async () => {
   }
   const cmdChain = batchCmds.join(" && ");
   const output = await runCommandTimeout(cmdChain, { maxTime: 6000 });
-  expect(countOccurrences(output, "Usage: attranslate [options]")).toBe(runs);
+  expect(countOccurrences(output, "Usage: lingui-ai-translate [options]")).toBe(runs);
 });
 
 function countOccurrences(content: string, pattern: string): number {
