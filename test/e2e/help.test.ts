@@ -38,7 +38,7 @@ test("unknown command with options", async () => {
   const validOptions = buildE2EArgs(defaultE2EArgs);
   const output = await runTranslateExpectFailure(`jivduns ${validOptions}`);
   expect(output).toBe(
-    "error: unknown command 'jivduns'. See 'attranslate --help'.\n"
+    "error: unknown command 'jivduns'. See 'lingui-ai-translate --help'.\n"
   );
 });
 

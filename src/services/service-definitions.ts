@@ -8,6 +8,8 @@ export interface TResult {
 export interface TString {
   key: string;
   value: string;
+  /** Context from @context comment for AI translation */
+  context?: string;
 }
 
 export interface TServiceArgs {

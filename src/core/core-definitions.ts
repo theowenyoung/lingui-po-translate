@@ -6,12 +6,14 @@ export type TSet = Map<string, string | null>;
 export interface CoreArgs {
   src: TSet;
   srcLng: string;
+  srcFile: string;
   oldTarget: TSet | null;
   targetLng: string;
   service: TServiceType;
   serviceConfig: string | null;
   matcher: TMatcherType;
   prompt: string;
+  sourceOverride: SourceOverrideMap;
 }
 
 export interface TChangeSet {
@@ -42,4 +44,30 @@ export interface CliArgs extends Record<string, string | undefined> {
   service: string;
   serviceConfig?: string;
   matcher: string;
+  prompt?: string;
+  sourceOverride?: string;
+}
+
+/**
+ * Parsed source language override mapping
+ * e.g., "zh-Hant:zh-Hans,pt-BR:pt-PT" -> { "zh-Hant": "zh-Hans", "pt-BR": "pt-PT" }
+ */
+export type SourceOverrideMap = Map<string, string>;
+
+/**
+ * Parse source override string into a map
+ */
+export function parseSourceOverride(sourceOverride: string | undefined): SourceOverrideMap {
+  const map = new Map<string, string>();
+  if (!sourceOverride) {
+    return map;
+  }
+  const pairs = sourceOverride.split(",");
+  for (const pair of pairs) {
+    const [target, source] = pair.split(":").map((s) => s.trim());
+    if (target && source) {
+      map.set(target, source);
+    }
+  }
+  return map;
 }

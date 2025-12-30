@@ -4,9 +4,9 @@ import { logFatal } from "../../src/util/util";
 
 export function buildTranslateCommand(args: string) {
   if (process.platform === "win32") {
-    return `node "${join(process.cwd(), "bin", "attranslate")}" ${args}`;
+    return `node "${join(process.cwd(), "bin", "lingui-ai-translate")}" ${args}`;
   } else {
-    return `${join(process.cwd(), "bin", "attranslate")} ${args}`;
+    return `${join(process.cwd(), "bin", "lingui-ai-translate")} ${args}`;
   }
 }
 

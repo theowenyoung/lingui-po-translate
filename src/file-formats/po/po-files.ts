@@ -12,6 +12,7 @@ import {
   parsePotFile,
   updatePotTranslations,
 } from "./po-ops";
+import { ParsedComment } from "./comment-parser";
 
 interface PotAuxData {
   potFile: GetTextTranslations;
@@ -19,8 +20,23 @@ interface PotAuxData {
 }
 interface PotCacheEntry {
   comments: GetTextComment;
+  parsedComment: ParsedComment;
 }
 export const potCache = new FormatCache<PotCacheEntry, PotAuxData>();
+
+/**
+ * Get parsed comments for all keys in a file
+ */
+export function getParsedComments(path: string): Map<string, ParsedComment> {
+  const result = new Map<string, ParsedComment>();
+  const fileCache = potCache.lookupFileCache(path);
+  if (fileCache) {
+    fileCache.entries.forEach((entry, key) => {
+      result.set(key, entry.parsedComment);
+    });
+  }
+  return result;
+}
 
 export class PoFile implements TFileFormat {
   readTFile(args: ReadTFileArgs): Promise<TSet> {

@@ -1,6 +1,6 @@
 import { translateCore } from "./translate-core";
 import { existsSync } from "fs";
-import { CliArgs, CoreArgs, TSet } from "./core-definitions";
+import { CliArgs, CoreArgs, parseSourceOverride, TSet } from "./core-definitions";
 import { areEqual } from "./tset-ops";
 import { checkDir, checkNotDir, getDebugPath, logFatal } from "../util/util";
 import { readTFileCore, writeTFileCore } from "./core-util";
@@ -92,12 +92,14 @@ export async function translateCli(cliArgs: CliArgs) {
   const coreArgs: CoreArgs = {
     src,
     srcLng: cliArgs.srcLng,
+    srcFile: cliArgs.srcFile,
     oldTarget,
     targetLng: cliArgs.targetLng,
     service: cliArgs.service as TServiceType,
     serviceConfig: cliArgs.serviceConfig ?? null,
     matcher: cliArgs.matcher as TMatcherType,
     prompt: cliArgs.prompt ?? "",
+    sourceOverride: parseSourceOverride(cliArgs.sourceOverride),
   };
   const result = await translateCore(coreArgs);
 

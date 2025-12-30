@@ -11,6 +11,7 @@ import {
   TServiceArgs,
   TString,
 } from "../services/service-definitions";
+import { getParsedComments } from "../file-formats/po/po-files";
 
 export async function invokeTranslationService(
   serviceInputs: TSet,
@@ -64,11 +65,17 @@ async function runTranslationService(
     const replacer = replaceInterpolations(rawString.value, matcher);
     replacers.set(rawString.key, replacer);
   });
+
+  // Get parsed comments for context
+  const parsedComments = getParsedComments(args.srcFile);
+
   const replacedInputs: TString[] = rawInputs.map((rawString) => {
+    const parsed = parsedComments.get(rawString.key);
     return {
       key: rawString.key,
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       value: replacers.get(rawString.key)!.clean,
+      context: parsed?.context,
     };
   });
 

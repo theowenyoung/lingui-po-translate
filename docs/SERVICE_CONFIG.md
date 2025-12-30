@@ -1,14 +1,14 @@
 # Service Configuration
 
-Currently, you need to obtain an API-key if you use `attranslate` with automated translation-services.
+Currently, you need to obtain an API-key if you use `lingui-ai-translate` with automated translation-services.
 This document provides guidance on how to obtain API-keys for specific services.
-Once you have an API-key, pass your API-key to `attranslate` via the `--serviceConfig`-flag.
+Once you have an API-key, pass your API-key to `lingui-ai-translate` via the `--serviceConfig`-flag.
 
 ### OpenAI (ChatGPT)
 
 - Create an account on https://platform.openai.com/
 - Create and copy an API key from https://platform.openai.com/account/api-keys
-- Pass your API key via the `--serviceConfig`-flag to `attranslate`.
+- Pass your API key via the `--serviceConfig`-flag to `lingui-ai-translate`.
 
 ### Google Translate
 
@@ -24,7 +24,7 @@ Follow these steps to get an API-key for Google Translate:
   https://console.cloud.google.com/flows/enableapi?apiid=translate.googleapis.com
 [auth]: https://cloud.google.com/docs/authentication/getting-started
 
-Once you have a service account, pass a path to your `service_account_key.json` via the `--serviceConfig`-flag to `attranslate`.
+Once you have a service account, pass a path to your `service_account_key.json` via the `--serviceConfig`-flag to `lingui-ai-translate`.
 
 ### Azure Translator
 

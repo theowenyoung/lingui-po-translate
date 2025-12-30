@@ -1,12 +1,12 @@
 # Operation Modes
 
-When generating target files, attranslate has the following two operation modes:
+When generating target files, lingui-ai-translate has the following two operation modes:
 
 - `Source-tree preservation`
 - `Tree-generation from scratch`
 
-attranslate tries to use `Source-tree preservation` as often as possible, and only uses `Tree-generation from scratch` as a fallback.
-Moreover, attranslate has the rule that source files are *never* modified, only the target files are modified or generated.
+lingui-ai-translate tries to use `Source-tree preservation` as often as possible, and only uses `Tree-generation from scratch` as a fallback.
+Moreover, lingui-ai-translate has the rule that source files are *never* modified, only the target files are modified or generated.
 This document describes the two operation modes in more detail.
 
 ## Source-tree preservation

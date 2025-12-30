@@ -39,8 +39,8 @@ jobs:
       - run: npm run build
       - if: ${{ matrix.os != 'macos-latest' && matrix.os != 'windows-latest' }}
         run: |
-          timeout 0.2s time ./bin/attranslate --version
-          timeout 0.2s time ./bin/attranslate --help
+          timeout 0.2s time ./bin/lingui-ai-translate --version
+          timeout 0.2s time ./bin/lingui-ai-translate --help
       - if: ${{ matrix.os != 'windows-latest' }}
         run: npm run test
       - if: ${{ matrix.os == 'windows-latest' }}
@@ -68,6 +68,6 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
       - run: node --version
-      - run: npm install --global attranslate
-      - run: attranslate --help
-      - run: attranslate --version
+      - run: npm install --global lingui-ai-translate
+      - run: lingui-ai-translate --help
+      - run: lingui-ai-translate --version
