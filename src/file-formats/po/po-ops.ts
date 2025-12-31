@@ -35,7 +35,9 @@ export function extractPotTranslations(
   const tSet: TSet = new Map();
   traversePot(potFile, (getText) => {
     const key: string = getText.msgid;
-    const value: string = getText.msgstr.join();
+    const rawValue: string = getText.msgstr.join();
+    // Treat empty msgstr as null (needs translation) rather than "" (already translated)
+    const value: string | null = rawValue === "" ? null : rawValue;
     if (key) {
       tSet.set(key, value);
     }

@@ -5,15 +5,15 @@
   ],
   [
     "German",
-    ""
+    null
   ],
   [
     "Spanish",
-    ""
+    null
   ],
   [
     "French",
-    ""
+    null
   ],
   [
     "The device has not been started, please try again",
@@ -25,7 +25,7 @@
   ],
   [
     "Please update your OS to use the device.",
-    ""
+    null
   ],
   [
     "This device has already been used, please try another one",
@@ -45,15 +45,15 @@
   ],
   [
     "device already running",
-    ""
+    null
   ],
   [
     "device contains values",
-    ""
+    null
   ],
   [
     "device contains invalid Data",
-    ""
+    null
   ],
   [
     "minimum entity length must be shorter than maximum entity length",
