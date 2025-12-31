@@ -1,6 +1,6 @@
 {
   "name": "lingui-po-translate",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "AI-powered translation tool for Lingui PO files with context-aware translations",
   "repository": {
     "type": "git",
