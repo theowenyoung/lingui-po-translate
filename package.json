@@ -35,7 +35,7 @@
     "test": "jest --testTimeout=10000",
     "test:windows": "npm run test -- --config=test/windows.jest.config.js",
     "test:generate_refs": "GENERATE_REFS=True npm run test",
-    "prepublishOnly": "git diff --exit-code"
+    "prepublishOnly": "rm -rf ./dist && tsc && git diff --exit-code"
   },
   "dependencies": {
     "@google-cloud/translate": "^8.3.0",
