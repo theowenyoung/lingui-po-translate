@@ -77,13 +77,10 @@ t({
   comment: "@manual:zh-Hans,zh-Hant"
 })
 
-// Combine with context
+// Combine with context (use ; as separator)
 t({
   message: "Technical term",
-  comment: `
-    @manual:zh-Hans
-    @context:Industry-specific terminology
-  `
+  comment: "@manual:zh-Hans; @context:Industry-specific terminology"
 })
 ```
 
@@ -176,6 +173,8 @@ Options:
   --baseUrl <url>                 Custom API base URL for OpenAI-compatible APIs
   --prompt <prompt>               Additional instructions for AI translation
   --matcher <matcher>             Interpolation matcher: "none", "icu", "i18next", "sprintf"
+  --model <model>                 Model for AI translation (default: "gpt-4o-mini")
+  --debug                         Print debug info including API requests/responses
   -v, --version                   Output the version number
   -h, --help                      Display help
 ```
@@ -233,6 +232,48 @@ lingui-po-translate \
   --serviceConfig="YOUR_API_KEY" \
   --prompt="This is a medical application. Keep technical terms like 'MRI', 'CT scan' in English. Use polite Japanese (敬語)."
 ```
+
+## Model Selection
+
+Specify a different model for translation:
+
+```bash
+# Use GPT-4o for higher quality translations
+lingui-po-translate \
+  --srcFile=locales/en.po \
+  --targetFile=locales/zh.po \
+  --targetLng=zh \
+  --service=openai \
+  --serviceConfig="YOUR_API_KEY" \
+  --model=gpt-4o
+
+# Use with DeepSeek
+lingui-po-translate \
+  --baseUrl="https://api.deepseek.com/v1" \
+  --serviceConfig="YOUR_DEEPSEEK_KEY" \
+  --model=deepseek-chat \
+  ...
+```
+
+Default model: `gpt-4o-mini`
+
+## Debugging
+
+Use `--debug` to print API requests and responses:
+
+```bash
+lingui-po-translate \
+  --srcFile=locales/en.po \
+  --targetFile=locales/zh.po \
+  --targetLng=zh \
+  --service=openai \
+  --serviceConfig="YOUR_API_KEY" \
+  --debug
+```
+
+This will print:
+- System prompt and user prompt sent to the API
+- Full API response including token usage
 
 ## Weblate Integration
 

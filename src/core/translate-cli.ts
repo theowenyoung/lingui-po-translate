@@ -102,6 +102,7 @@ export async function translateCli(cliArgs: CliArgs) {
     sourceOverride: parseSourceOverride(cliArgs.sourceOverride),
     baseUrl: cliArgs.baseUrl ?? null,
     debug: cliArgs.debug ?? false,
+    model: cliArgs.model ?? null,
   };
   const result = await translateCore(coreArgs);
 

@@ -72,6 +72,10 @@ export function run(process: NodeJS.Process, cliBinDir: string): void {
       "--debug",
       "print debug information including API requests"
     )
+    .option(
+      "--model <model>",
+      "model to use for AI translation services (e.g., gpt-4o-mini, gpt-4o)"
+    )
     .version(extractVersion({ cliBinDir }), "-v, --version")
     .parse(process.argv);
 
@@ -94,6 +98,7 @@ export function run(process: NodeJS.Process, cliBinDir: string): void {
     sourceOverride: commander.opts().sourceOverride,
     baseUrl: commander.opts().baseUrl,
     debug: commander.opts().debug,
+    model: commander.opts().model,
   };
   translateCli(args)
     .then(() => {

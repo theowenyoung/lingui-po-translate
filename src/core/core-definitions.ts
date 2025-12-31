@@ -16,6 +16,7 @@ export interface CoreArgs {
   sourceOverride: SourceOverrideMap;
   baseUrl: string | null;
   debug: boolean;
+  model: string | null;
 }
 
 export interface TChangeSet {
@@ -50,6 +51,7 @@ export interface CliArgs extends Record<string, string | boolean | undefined> {
   sourceOverride?: string;
   baseUrl?: string;
   debug?: boolean;
+  model?: string;
 }
 
 /**

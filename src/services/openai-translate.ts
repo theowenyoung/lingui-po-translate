@@ -38,9 +38,11 @@ async function translateSingleString(
     },
   ];
 
+  const model = args.model ?? "gpt-4o-mini";
+
   if (args.debug) {
     console.log("\n[DEBUG] OpenAI Request:");
-    console.log("  Model: gpt-4o-mini-2024-07-18");
+    console.log("  Model:", model);
     console.log("  System:", systemPrompt);
     console.log("  User:", userPrompt);
   }
@@ -52,7 +54,7 @@ async function translateSingleString(
    */
   try {
     const completion = await openai.createChatCompletion({
-      model: "gpt-4o-mini-2024-07-18",
+      model,
       messages: messages,
       temperature: 0,
       max_tokens: 2048,

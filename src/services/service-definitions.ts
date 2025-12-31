@@ -20,6 +20,7 @@ export interface TServiceArgs {
   prompt: string;
   baseUrl: string | null;
   debug: boolean;
+  model: string | null;
 }
 
 export interface TService {

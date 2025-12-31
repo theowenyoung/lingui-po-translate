@@ -68,6 +68,9 @@ This is a CLI tool for AI-powered translation of Lingui PO files. The codebase f
 The `src/file-formats/po/comment-parser.ts` parses special annotations:
 - `@manual:lang1,lang2` - Skip auto-translation for specified languages
 - `@context:text` - Context passed to AI for better translations
+- Multiple annotations can be separated by `;` or newline:
+  - Single line: `#. @manual:zh; @context:Button text`
+  - Multi-line: `#. @manual:zh` followed by `#. @context:Button text`
 
 ## Test Structure
 
