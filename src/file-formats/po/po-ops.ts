@@ -107,7 +107,7 @@ export function parsePotFile(
     if (!potFile.headers) {
       potFile.headers = {};
     }
-    potFile.headers["X-Generator"] = "lingui-ai-translate";
+    potFile.headers["X-Generator"] = "lingui-po-translate";
     return potFile;
   } catch (e) {
     console.error(e);

@@ -15,7 +15,7 @@ async function translateSingleString(
   const OPENAI_API_KEY = args.serviceConfig;
   if (!OPENAI_API_KEY || !OPENAI_API_KEY.trim().length) {
     logFatal(
-      'Missing OpenAI API Key: Please get an API key from https://platform.openai.com/account/api-keys and then call lingui-ai-translate with --serviceConfig="YOUR API KEY"'
+      'Missing OpenAI API Key: Please get an API key from https://platform.openai.com/account/api-keys and then call lingui-po-translate with --serviceConfig="YOUR API KEY"'
     );
   }
 

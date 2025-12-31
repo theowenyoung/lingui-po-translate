@@ -2,7 +2,7 @@ const fs = require("fs");
 
 /**
  * This is a sample-script for preprocessing and postprocessing of transation-files.
- * Preprocessing or postprocessing may be needed because lingui-ai-translate cannot cover every edge-case.
+ * Preprocessing or postprocessing may be needed because lingui-po-translate cannot cover every edge-case.
  */
 
 function searchAndReplaceInFile(filePath, search, replacement) {

@@ -1,4 +1,4 @@
-# lingui-ai-translate
+# lingui-po-translate
 
 AI-powered translation tool for [Lingui](https://lingui.dev/) PO files with context-aware translations.
 
@@ -13,20 +13,20 @@ AI-powered translation tool for [Lingui](https://lingui.dev/) PO files with cont
 ## Installation
 
 ```bash
-npm install -g lingui-ai-translate
+npm install -g lingui-po-translate
 ```
 
 Or as a dev dependency:
 
 ```bash
-npm install --save-dev lingui-ai-translate
+npm install --save-dev lingui-po-translate
 ```
 
 ## Quick Start
 
 ```bash
 # Basic translation
-lingui-ai-translate \
+lingui-po-translate \
   --srcFile=locales/en.po \
   --srcLng=en \
   --srcFormat=po \
@@ -100,7 +100,7 @@ t({
 Translate certain languages from a different source (e.g., Traditional Chinese from Simplified Chinese):
 
 ```bash
-lingui-ai-translate \
+lingui-po-translate \
   --srcFile=locales/en.po \
   --srcLng=en \
   --srcFormat=po \
@@ -134,14 +134,14 @@ COMMON_ARGS=(
 )
 
 # Translate to Simplified Chinese (manual entries skipped)
-lingui-ai-translate \
+lingui-po-translate \
   --srcFile=$BASE_DIR/en.po \
   --targetFile=$BASE_DIR/zh-Hans.po \
   --targetLng=zh-Hans \
   "${COMMON_ARGS[@]}"
 
 # Translate to Traditional Chinese (from zh-Hans for @manual entries)
-lingui-ai-translate \
+lingui-po-translate \
   --srcFile=$BASE_DIR/en.po \
   --targetFile=$BASE_DIR/zh-Hant.po \
   --targetLng=zh-Hant \
@@ -150,7 +150,7 @@ lingui-ai-translate \
 
 # Translate to other languages
 for lang in de fr ja ko; do
-  lingui-ai-translate \
+  lingui-po-translate \
     --srcFile=$BASE_DIR/en.po \
     --targetFile=$BASE_DIR/$lang.po \
     --targetLng=$lang \
@@ -161,7 +161,7 @@ done
 ## CLI Options
 
 ```
-Usage: lingui-ai-translate [options]
+Usage: lingui-po-translate [options]
 
 Options:
   --srcFile <sourceFile>          The source PO file to be translated
@@ -210,14 +210,14 @@ You can use any OpenAI-compatible API by setting the base URL:
 ```bash
 # Using DeepSeek
 export OPENAI_BASE_URL="https://api.deepseek.com/v1"
-lingui-ai-translate --service=openai --serviceConfig="YOUR_DEEPSEEK_KEY" ...
+lingui-po-translate --service=openai --serviceConfig="YOUR_DEEPSEEK_KEY" ...
 
 # Using local Ollama
 export OPENAI_BASE_URL="http://localhost:11434/v1"
-lingui-ai-translate --service=openai --serviceConfig="ollama" ...
+lingui-po-translate --service=openai --serviceConfig="ollama" ...
 
 # Or via CLI argument (takes precedence over env var)
-lingui-ai-translate --baseUrl="https://api.deepseek.com/v1" --serviceConfig="YOUR_KEY" ...
+lingui-po-translate --baseUrl="https://api.deepseek.com/v1" --serviceConfig="YOUR_KEY" ...
 ```
 
 ## Custom Prompts
@@ -225,7 +225,7 @@ lingui-ai-translate --baseUrl="https://api.deepseek.com/v1" --serviceConfig="YOU
 Provide additional instructions to the AI:
 
 ```bash
-lingui-ai-translate \
+lingui-po-translate \
   --srcFile=locales/en.po \
   --targetFile=locales/ja.po \
   --targetLng=ja \

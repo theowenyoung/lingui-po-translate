@@ -1,9 +1,9 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"Shortened stuff compared to englishX-Generator: lingui-ai-translate\n"
+"Shortened stuff compared to englishX-Generator: lingui-po-translate\n"
 "Content-Type: text/plain\n"
-"X-Generator: lingui-ai-translate\n"
+"X-Generator: lingui-po-translate\n"
 
 # Another comment that should survive transformations
 msgid "Made with ❤"

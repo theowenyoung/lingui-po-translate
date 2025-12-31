@@ -1,10 +1,10 @@
 {
-  "name": "lingui-ai-translate",
+  "name": "lingui-po-translate",
   "version": "1.0.0",
   "description": "AI-powered translation tool for Lingui PO files with context-aware translations",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/theowenyoung/lingui-ai-translate.git"
+    "url": "git+https://github.com/theowenyoung/lingui-po-translate.git"
   },
   "keywords": [
     "lingui",
@@ -18,11 +18,11 @@
   ],
   "license": "GPL",
   "bugs": {
-    "url": "https://github.com/theowenyoung/lingui-ai-translate/issues"
+    "url": "https://github.com/theowenyoung/lingui-po-translate/issues"
   },
-  "homepage": "https://github.com/theowenyoung/lingui-ai-translate#readme",
+  "homepage": "https://github.com/theowenyoung/lingui-po-translate#readme",
   "bin": {
-    "lingui-ai-translate": "bin/lingui-ai-translate"
+    "lingui-po-translate": "bin/lingui-po-translate"
   },
   "main": "./dist/index.js",
   "files": [
