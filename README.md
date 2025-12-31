@@ -173,6 +173,7 @@ Options:
   --service <translationService>  One of "openai", "typechat", "google-translate", "azure", etc.
   --serviceConfig <serviceKey>    API key for the translation service
   --sourceOverride <mapping>      Override source language (e.g., "zh-Hant:zh-Hans,pt-BR:pt-PT")
+  --baseUrl <url>                 Custom API base URL for OpenAI-compatible APIs
   --prompt <prompt>               Additional instructions for AI translation
   --matcher <matcher>             Interpolation matcher: "none", "icu", "i18next", "sprintf"
   -v, --version                   Output the version number
@@ -192,12 +193,32 @@ Options:
 
 ## Environment Variables
 
+For OpenAI service:
+- `OPENAI_BASE_URL` - Custom API base URL for OpenAI-compatible APIs (e.g., DeepSeek, Ollama)
+
 For TypeChat service:
 - `OPENAI_API_KEY` - Your OpenAI API key
 - `OPENAI_MODEL` - Model to use (default: `gpt-4o-mini-2024-07-18`)
 - `OPENAI_ENDPOINT` - Custom API endpoint (for Azure OpenAI or compatible APIs)
 - `TYPECHAT_RPM` - Requests per minute limit
 - `OPEN_AI_BATCH_SIZE` - Batch size for translation (default: 10)
+
+### Using OpenAI-Compatible APIs
+
+You can use any OpenAI-compatible API by setting the base URL:
+
+```bash
+# Using DeepSeek
+export OPENAI_BASE_URL="https://api.deepseek.com/v1"
+lingui-ai-translate --service=openai --serviceConfig="YOUR_DEEPSEEK_KEY" ...
+
+# Using local Ollama
+export OPENAI_BASE_URL="http://localhost:11434/v1"
+lingui-ai-translate --service=openai --serviceConfig="ollama" ...
+
+# Or via CLI argument (takes precedence over env var)
+lingui-ai-translate --baseUrl="https://api.deepseek.com/v1" --serviceConfig="YOUR_KEY" ...
+```
 
 ## Custom Prompts
 

@@ -21,7 +21,7 @@ async function translateSingleString(
 
   const configuration = new Configuration({
     apiKey: OPENAI_API_KEY,
-    basePath: args.baseUrl ?? undefined,
+    basePath: args.baseUrl ?? process.env.OPENAI_BASE_URL ?? undefined,
   });
   const openai = new OpenAIApi(configuration);
 
