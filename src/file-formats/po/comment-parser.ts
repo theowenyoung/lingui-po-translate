@@ -15,11 +15,13 @@ export interface ParsedComment {
  * - @manual:zh-Hans,zh-Hant - languages requiring manual translation
  * - @context:text - context for AI translation
  * - Plain text (without @) - also treated as context
+ * - Multiple directives can be separated by ; or newline
  *
  * Example:
+ * #. @manual:zh-Hans; @context:This is a save button
+ * Or:
  * #. @manual:zh-Hans
  * #. @context:This is a save button
- * #. Some additional context
  *
  * @param extracted - The extracted comment string from PO file
  * @returns ParsedComment with manual languages and context
@@ -34,31 +36,39 @@ export function parseExtractedComment(extracted: string | undefined): ParsedComm
     return result;
   }
 
-  const lines = extracted.split("\n");
-  const contextParts: string[] = [];
-
-  for (const line of lines) {
-    const trimmedLine = line.trim();
-
-    if (trimmedLine.startsWith("@manual:")) {
-      // Parse @manual:zh-Hans,zh-Hant
-      const langList = trimmedLine.substring("@manual:".length).trim();
-      if (langList) {
-        result.manual = langList.split(",").map((lang) => lang.trim()).filter(Boolean);
+  // Split by newline first, then by ; for each line
+  const parts: string[] = [];
+  for (const line of extracted.split("\n")) {
+    for (const part of line.split(";")) {
+      const trimmed = part.trim();
+      if (trimmed) {
+        parts.push(trimmed);
       }
-    } else if (trimmedLine.startsWith("@context:")) {
-      // Parse @context:text
-      const contextText = trimmedLine.substring("@context:".length).trim();
-      if (contextText) {
-        contextParts.push(contextText);
-      }
-    } else if (trimmedLine && !trimmedLine.startsWith("@")) {
-      // Plain text without @ prefix is also context
-      contextParts.push(trimmedLine);
     }
   }
 
-  result.context = contextParts.join("\n");
+  const contextParts: string[] = [];
+
+  for (const part of parts) {
+    if (part.startsWith("@manual:")) {
+      // Parse @manual:zh-Hans,zh-Hant
+      const langList = part.substring("@manual:".length).trim();
+      if (langList) {
+        result.manual = langList.split(",").map((lang) => lang.trim()).filter(Boolean);
+      }
+    } else if (part.startsWith("@context:")) {
+      // Parse @context:text
+      const contextText = part.substring("@context:".length).trim();
+      if (contextText) {
+        contextParts.push(contextText);
+      }
+    } else if (!part.startsWith("@")) {
+      // Plain text without @ prefix is also context
+      contextParts.push(part);
+    }
+  }
+
+  result.context = contextParts.join(" ");
   return result;
 }
 
