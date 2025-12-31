@@ -101,6 +101,7 @@ export async function translateCli(cliArgs: CliArgs) {
     prompt: cliArgs.prompt ?? "",
     sourceOverride: parseSourceOverride(cliArgs.sourceOverride),
     baseUrl: cliArgs.baseUrl ?? null,
+    debug: cliArgs.debug ?? false,
   };
   const result = await translateCore(coreArgs);
 
@@ -136,7 +137,7 @@ export async function translateCli(cliArgs: CliArgs) {
 
 function checkForEmptyStringOptions(args: CliArgs) {
   Object.keys(args).forEach((key) => {
-    const arg: string | undefined = args[key];
+    const arg = args[key];
     if (typeof arg === "string" && (arg === "" || !arg.trim().length)) {
       logFatal(
         `option '--${key}' is empty -> Either omit it or provide a value`

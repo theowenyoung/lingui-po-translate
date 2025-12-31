@@ -1,0 +1,20 @@
+# Test file for --debug feature
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=utf-8\n"
+"X-Generator: lingui-po-translate\n"
+
+#: NEEDS WORK
+#. @context:This is a save button in the toolbar
+msgid "Save"
+msgstr "保存"
+
+#. @context:This is a delete button, should sound polite
+#. @manual:zh,ja
+msgid "Delete"
+msgstr "Delete"
+
+#: NEEDS WORK
+#. User greeting message shown after login
+msgid "Welcome back!"
+msgstr "欢迎回来！"

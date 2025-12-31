@@ -1,0 +1,17 @@
+# Test file for --debug feature
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+#. @context:This is a save button in the toolbar
+msgid "Save"
+msgstr "Save"
+
+#. @context:This is a delete button, should sound polite
+#. @manual:zh,ja
+msgid "Delete"
+msgstr "Delete"
+
+#. User greeting message shown after login
+msgid "Welcome back!"
+msgstr "Welcome back!"

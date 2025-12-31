@@ -58,6 +58,12 @@ function filterByManualMarking(
     if (shouldSkipForManual(parsed, args.targetLng)) {
       // Target language is in @manual list, skip
       toSkip.set(key, value);
+      // Log @manual skip info
+      const targetTranslation = args.oldTarget?.get(key);
+      const translationStatus = targetTranslation
+        ? `already translated: "${targetTranslation}"`
+        : "not yet translated";
+      console.info(`@manual:${args.targetLng} - skip "${key}" (${translationStatus})`);
       return;
     }
 

@@ -15,6 +15,7 @@ export interface CoreArgs {
   prompt: string;
   sourceOverride: SourceOverrideMap;
   baseUrl: string | null;
+  debug: boolean;
 }
 
 export interface TChangeSet {
@@ -35,7 +36,7 @@ export interface CoreResults {
   newTarget: TSet;
 }
 
-export interface CliArgs extends Record<string, string | undefined> {
+export interface CliArgs extends Record<string, string | boolean | undefined> {
   srcFile: string;
   srcLng: string;
   srcFormat: string;
@@ -48,6 +49,7 @@ export interface CliArgs extends Record<string, string | undefined> {
   prompt?: string;
   sourceOverride?: string;
   baseUrl?: string;
+  debug?: boolean;
 }
 
 /**

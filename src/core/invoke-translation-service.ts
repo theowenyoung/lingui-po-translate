@@ -86,6 +86,7 @@ async function runTranslationService(
     serviceConfig: args.serviceConfig,
     prompt: args.prompt,
     baseUrl: args.baseUrl,
+    debug: args.debug,
   };
 
   console.info(

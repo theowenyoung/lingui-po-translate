@@ -25,14 +25,25 @@ async function translateSingleString(
   });
   const openai = new OpenAIApi(configuration);
 
-  const prompt = generatePrompt(tString, args);
+  const { systemPrompt, userPrompt } = generatePrompt(tString, args);
 
   const messages: ChatCompletionRequestMessage[] = [
     {
+      role: "system",
+      content: systemPrompt,
+    },
+    {
       role: "user",
-      content: prompt,
+      content: userPrompt,
     },
   ];
+
+  if (args.debug) {
+    console.log("\n[DEBUG] OpenAI Request:");
+    console.log("  Model: gpt-4o-mini-2024-07-18");
+    console.log("  System:", systemPrompt);
+    console.log("  User:", userPrompt);
+  }
 
   /**
    * https://platform.openai.com/docs/api-reference/completions/create
@@ -47,6 +58,9 @@ async function translateSingleString(
       max_tokens: 2048,
     });
 
+    if (args.debug) {
+      console.log("\n[DEBUG] OpenAI Full Response:", JSON.stringify(completion.data, null, 2));
+    }
     const text = completion.data.choices[0].message?.content;
     if (text == undefined) {
       logFatal("OpenAI returned undefined for prompt " + prompt);
@@ -66,21 +80,31 @@ async function translateSingleString(
   }
 }
 
-function generatePrompt(tString: TString, args: TServiceArgs) {
-  const capitalizedText = tString.value;
-  const initialPrompt = `only translate my software string from ${args.srcLng} to ${args.targetLng}. don't chat or explain. Using the correct terms for computer software in the target language, only show target language never repeat string. if you don't find something to translate, don't respond`;
+interface GeneratedPrompt {
+  systemPrompt: string;
+  userPrompt: string;
+}
 
-  let contextInfo = `\n\nkey (used for context): ${tString.key}`;
+function generatePrompt(tString: TString, args: TServiceArgs): GeneratedPrompt {
+  // System: Role, language pair, rules, context, and custom instructions
+  let systemPrompt = `You are a software UI translator.
+
+Task: Translate from ${args.srcLng} to ${args.targetLng}.
+Input: User provides text in <source> tags.
+Output: Return only the translated text, without any tags or explanations.
+Rules: Keep all placeholders ({name}, %s, %d), HTML tags, and formatting unchanged.`;
+
   if (tString.context) {
-    contextInfo += `\n\ncontext: ${tString.context}`;
+    systemPrompt += `\nContext: ${tString.context}`;
+  }
+  if (args.prompt) {
+    systemPrompt += `\nNote: ${args.prompt}`;
   }
 
-  return (
-    initialPrompt +
-    (args.prompt ? `\n\n${args.prompt}` : "") +
-    contextInfo +
-    `\n\nstring to translate: ${capitalizedText}`
-  );
+  // User: Text wrapped in XML tags
+  const userPrompt = `<source>${tString.value}</source>`;
+
+  return { systemPrompt, userPrompt };
 }
 
 async function translateBatch(

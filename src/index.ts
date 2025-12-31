@@ -68,6 +68,10 @@ export function run(process: NodeJS.Process, cliBinDir: string): void {
       "--baseUrl <url>",
       "custom API base URL for OpenAI-compatible services (e.g., 'https://api.openai.com/v1')"
     )
+    .option(
+      "--debug",
+      "print debug information including API requests"
+    )
     .version(extractVersion({ cliBinDir }), "-v, --version")
     .parse(process.argv);
 
@@ -89,6 +93,7 @@ export function run(process: NodeJS.Process, cliBinDir: string): void {
     prompt: commander.opts().prompt,
     sourceOverride: commander.opts().sourceOverride,
     baseUrl: commander.opts().baseUrl,
+    debug: commander.opts().debug,
   };
   translateCli(args)
     .then(() => {
