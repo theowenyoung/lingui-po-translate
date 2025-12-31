@@ -18,6 +18,7 @@ export interface TServiceArgs {
   targetLng: string;
   serviceConfig: string | null;
   prompt: string;
+  baseUrl: string | null;
 }
 
 export interface TService {

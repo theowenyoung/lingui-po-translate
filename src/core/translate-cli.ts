@@ -100,6 +100,7 @@ export async function translateCli(cliArgs: CliArgs) {
     matcher: cliArgs.matcher as TMatcherType,
     prompt: cliArgs.prompt ?? "",
     sourceOverride: parseSourceOverride(cliArgs.sourceOverride),
+    baseUrl: cliArgs.baseUrl ?? null,
   };
   const result = await translateCore(coreArgs);
 

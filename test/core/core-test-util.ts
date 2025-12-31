@@ -91,6 +91,7 @@ export const commonArgs: Omit<CoreArgs, "oldTarget" | "src"> = {
   targetLng: "de",
   prompt: "",
   sourceOverride: new Map(),
+  baseUrl: null,
 };
 
 export async function translateCoreAssert(

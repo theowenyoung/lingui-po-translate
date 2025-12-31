@@ -14,6 +14,7 @@ export interface CoreArgs {
   matcher: TMatcherType;
   prompt: string;
   sourceOverride: SourceOverrideMap;
+  baseUrl: string | null;
 }
 
 export interface TChangeSet {
@@ -46,6 +47,7 @@ export interface CliArgs extends Record<string, string | undefined> {
   matcher: string;
   prompt?: string;
   sourceOverride?: string;
+  baseUrl?: string;
 }
 
 /**
