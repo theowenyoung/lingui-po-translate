@@ -10,7 +10,7 @@ test("json simple up-to-date", async () => {
 
 test("missing OpenAI key", async () => {
   const output =
-    await runCommandExpectFailure(`cd sample-scripts && attranslate --srcFile=json-simple/en.json --srcLng=English --srcFormat=nested-json --targetFile=json-simple/es.json --targetLng=German --targetFormat=nested-json --service=openai
+    await runCommandExpectFailure(`cd sample-scripts && lingui-po-translate --srcFile=json-simple/en.json --srcLng=English --srcFormat=nested-json --targetFile=json-simple/es.json --targetLng=German --targetFormat=nested-json --service=openai
   `);
   expect(output).toContain(
     "error: Missing OpenAI API Key: Please get an API key from"
@@ -18,9 +18,12 @@ test("missing OpenAI key", async () => {
 });
 
 test("invalid OpenAI key", async () => {
-  const output =
-    await runCommandExpectFailure(`cd sample-scripts && attranslate --srcFile=json-simple/en.json --srcLng=English --srcFormat=nested-json --targetFile=json-simple/es.json --targetLng=German --targetFormat=nested-json --service=openai --serviceConfig=garbageapikey
-  `);
+  const output = await runCommandExpectFailure(
+    `cd sample-scripts && lingui-po-translate --srcFile=json-simple/en.json --srcLng=English --srcFormat=nested-json --targetFile=json-simple/es.json --targetLng=German --targetFormat=nested-json --service=openai --serviceConfig=garbageapikey
+  `,
+    undefined,
+    { ...process.env, OPENAI_BASE_URL: undefined }
+  );
   expect(output).toContain(
     "error: OpenAI: Request failed with status code 401, Status text:"
   );
@@ -28,7 +31,7 @@ test("invalid OpenAI key", async () => {
 
 test("missing OpenAI key (typechat)", async () => {
   const output = await runCommandExpectFailure(
-    `cd sample-scripts && attranslate --srcFile=json-simple/en.json --srcLng=English --srcFormat=nested-json --targetFile=json-simple/es.json --targetLng=German --targetFormat=nested-json --service=typechat
+    `cd sample-scripts && lingui-po-translate --srcFile=json-simple/en.json --srcLng=English --srcFormat=nested-json --targetFile=json-simple/es.json --targetLng=German --targetFormat=nested-json --service=typechat
   `,
     undefined,
     { ...process.env, OPENAI_API_KEY: undefined }
@@ -44,10 +47,10 @@ test("missing OpenAI key (typechat)", async () => {
 
 test("invalid OpenAI key (typechat)", async () => {
   const output = await runCommandExpectFailure(
-    `cd sample-scripts && attranslate --srcFile=json-simple/en.json --srcLng=English --srcFormat=nested-json --targetFile=json-simple/es.json --targetLng=German --targetFormat=nested-json --service=typechat
+    `cd sample-scripts && lingui-po-translate --srcFile=json-simple/en.json --srcLng=English --srcFormat=nested-json --targetFile=json-simple/es.json --targetLng=German --targetFormat=nested-json --service=typechat
   `,
     undefined,
-    { ...process.env, OPENAI_API_KEY: "garbageapikey" }
+    { ...process.env, OPENAI_API_KEY: "garbageapikey", OPENAI_BASE_URL: undefined, OPENAI_ENDPOINT: undefined }
   );
   if (semver.satisfies(process.version, ">=18")) {
     expect(output).toContain("error: REST API error 401: Unauthorized");

@@ -1,130 +1,251 @@
-<p align="center">
-  <img alt="attranslate - Semi-automated Text Translator for Websites and Apps" src="docs/logo/attranslate_logo.png">
-</p>
+# lingui-po-translate
 
-macOS/Ubuntu/Windows: [![Actions Status](https://github.com/fkirc/attranslate/workflows/Tests/badge.svg/?branch=master)](https://github.com/fkirc/attranslate/actions?query=branch%3Amaster)
+AI-powered translation tool for [Lingui](https://lingui.dev/) PO files with context-aware translations.
 
-`attranslate` is a tool for syncing translation-files, including JSON/YAML/XML and other formats.
-In contrast to paid services, any developer can integrate `attranslate` in a matter of minutes.
-`attranslate` will leave existing translations unchanged and only synchronize new translations.
+## Features
 
-Optionally, `attranslate` works with automated translation-services.
-For example, let's say that a translation-service achieves 80% correct translations.
-With `attranslate`, a fix of the remaining 20% may be faster than doing everything by hand.
-Other than that, `attranslate` supports purely manual translations or even file-format-conversions without changing the language.
+- **Context-aware translations**: Pass context from source code comments to AI for better translations
+- **Manual translation marking**: Mark specific entries for manual translation with `@manual:lang1,lang2`
+- **Source language override**: Translate Traditional Chinese from Simplified Chinese instead of English
+- **Incremental translation**: Only translates new or changed entries, preserves manual edits
+- **Multiple AI services**: Supports OpenAI, TypeChat, Google Translate, Azure, and more
 
-# Features
-
-## Preserve Manual Translations
-
-`attranslate` recognizes that machine translations are not perfect.
-Therefore, whenever you are unhappy with the produced text, `attranslate` allows you to simply overwrite text in your target-files.
-`attranslate` will never overwrite any manual corrections in subsequent runs.
-
-## Available Services
-
-`attranslate` supports the following services; many of them are free of charge:
-
-- `openai`: Uses a model like ChatGPT; free up to a limit
-- [google-translate](https://cloud.google.com/translate): Needs a GCloud account; free up to a limit
-- [azure](https://azure.microsoft.com/en-us/services/cognitive-services/translator-text-api/): Needs a Microsoft account; costs money
-- `sync-without-translate`: Does not change the language. This can be useful for converting between file formats, or for maintaining region-specific differences.
-- `manual`: Translates text with manual typing
-- `key-as-translation`: Uses the key as the translation, useful for debugging or placeholder translations.
-- [`typechat`](./docs/TypeChat.md): Translates text using OpenAI's language models or a self-hosted model with an OpenAI-compatible API.
-- [`typechat-manual`](./docs/TypeChat.md): Provides manual translation workflows by leveraging clipboard operations.
-
-# Usage Examples
-
-Translating a single file is as simple as the following line:
-
-```
-attranslate --srcFile=json-simple/en.json --srcLng=English --srcFormat=nested-json --targetFile=json-simple/es.json --targetLng=Spanish --targetFormat=nested-json --service=openai
-```
-
-If you have multiple target-languages, then you will need multiple calls to `attranslate`.
-You can write something like the following script:
+## Installation
 
 ```bash
-# This example translates an english JSON-file into spanish and german.
-BASE_DIR="json-advanced"
-COMMON_ARGS=( "--srcLng=en" "--srcFormat=nested-json" "--targetFormat=nested-json" "--service=google-translate" "--serviceConfig=gcloud/gcloud_service_account.json" )
-
-# install attranslate if it is not installed yet
-attranslate --version || npm install --global attranslate
-
-attranslate --srcFile=$BASE_DIR/en/fruits.json --targetFile=$BASE_DIR/es/fruits.json --targetLng=es "${COMMON_ARGS[@]}"
-attranslate --srcFile=$BASE_DIR/en/fruits.json --targetFile=$BASE_DIR/de/fruits.json --targetLng=de "${COMMON_ARGS[@]}"
+npm install -g lingui-po-translate
 ```
 
-Similarly, you can use `attranslate` to convert between file-formats.
-See [sample scripts](https://github.com/fkirc/attranslate/tree/master/sample-scripts) for more examples.
+Or as a dev dependency:
 
-# Integration Guide
+```bash
+npm install --save-dev lingui-po-translate
+```
 
-Firstly, ensure that [nodejs](https://nodejs.org/) is installed on your machine.
-Once you have `nodejs`, you can install `attranslate` via:
+## Quick Start
 
-`npm install --global attranslate`
+```bash
+# Basic translation
+lingui-po-translate \
+  --srcFile=locales/en.po \
+  --srcLng=en \
+  --srcFormat=po \
+  --targetFile=locales/zh-Hans.po \
+  --targetLng=zh-Hans \
+  --targetFormat=po \
+  --service=openai \
+  --serviceConfig="YOUR_OPENAI_API_KEY"
+```
 
-Alternatively, if you are a JavaScript-developer, then you can install `attranslate` via:
+## Source Code Annotations
 
-`npm install --save-dev attranslate`
+Add annotations in your Lingui source code to control translation behavior:
 
-Next, you should write a project-specific script that invokes `attranslate` for your specific files.
-See [sample scripts](https://github.com/fkirc/attranslate/tree/master/sample-scripts) for guidance on how to translate your project-specific files.
+### Context for AI (`@context`)
 
-# Usage Options
+```jsx
+import { t } from "@lingui/macro"
 
-Run `attranslate --help` to see a list of available options:
+// Provide context for better AI translation
+t({
+  message: "Save",
+  comment: "@context:Button to save form data, not 'save money'"
+})
+```
+
+Generated PO file:
+```po
+#. @context:Button to save form data, not 'save money'
+msgid "Save"
+msgstr ""
+```
+
+### Manual Translation (`@manual`)
+
+Mark entries that require manual translation for specific languages:
+
+```jsx
+// Only manually translate to zh-Hans, auto-translate to other languages
+t({
+  message: "Acme Corp",
+  comment: "@manual:zh-Hans"
+})
+
+// Manually translate both zh-Hans and zh-Hant
+t({
+  message: "Special Term",
+  comment: "@manual:zh-Hans,zh-Hant"
+})
+
+// Combine with context
+t({
+  message: "Technical term",
+  comment: `
+    @manual:zh-Hans
+    @context:Industry-specific terminology
+  `
+})
+```
+
+### Behavior with `@manual`
+
+| Target Language | `@manual:zh-Hans` | Behavior |
+|-----------------|-------------------|----------|
+| zh-Hans | In list | Skip (wait for manual translation) |
+| zh-Hant | Not in list + has sourceOverride | Translate from zh-Hans |
+| de, fr, etc. | Not in list | Copy original text |
+
+## Source Language Override
+
+Translate certain languages from a different source (e.g., Traditional Chinese from Simplified Chinese):
+
+```bash
+lingui-po-translate \
+  --srcFile=locales/en.po \
+  --srcLng=en \
+  --srcFormat=po \
+  --targetFile=locales/zh-Hant.po \
+  --targetLng=zh-Hant \
+  --targetFormat=po \
+  --service=openai \
+  --serviceConfig="YOUR_API_KEY" \
+  --sourceOverride="zh-Hant:zh-Hans"
+```
+
+This will:
+1. For entries **without** `@manual`: Translate from English as usual
+2. For entries **with** `@manual:zh-Hans`: Translate from `zh-Hans.po` (if zh-Hans translation exists)
+
+## Batch Translation Script
+
+Create a script to translate all your locales:
+
+```bash
+#!/bin/bash
+# translate.sh
+
+BASE_DIR="locales"
+COMMON_ARGS=(
+  "--srcLng=en"
+  "--srcFormat=po"
+  "--targetFormat=po"
+  "--service=openai"
+  "--serviceConfig=$OPENAI_API_KEY"
+)
+
+# Translate to Simplified Chinese (manual entries skipped)
+lingui-po-translate \
+  --srcFile=$BASE_DIR/en.po \
+  --targetFile=$BASE_DIR/zh-Hans.po \
+  --targetLng=zh-Hans \
+  "${COMMON_ARGS[@]}"
+
+# Translate to Traditional Chinese (from zh-Hans for @manual entries)
+lingui-po-translate \
+  --srcFile=$BASE_DIR/en.po \
+  --targetFile=$BASE_DIR/zh-Hant.po \
+  --targetLng=zh-Hant \
+  --sourceOverride="zh-Hant:zh-Hans" \
+  "${COMMON_ARGS[@]}"
+
+# Translate to other languages
+for lang in de fr ja ko; do
+  lingui-po-translate \
+    --srcFile=$BASE_DIR/en.po \
+    --targetFile=$BASE_DIR/$lang.po \
+    --targetLng=$lang \
+    "${COMMON_ARGS[@]}"
+done
+```
+
+## CLI Options
 
 ```
-Usage: attranslate [options]
+Usage: lingui-po-translate [options]
 
 Options:
-  --srcFile <sourceFile>             The source file to be translated
-  --srcLng <sourceLanguage>          A language code for the source language
-  --srcFormat <sourceFileFormat>     One of "flat-json", "nested-json", "yaml",
-                                     "po", "xml", "ios-strings", "arb", "csv"
-  --targetFile <targetFile>          The target file for the translations
-  --targetLng <targetLanguage>       A language code for the target language
-  --targetFormat <targetFileFormat>  One of "flat-json", "nested-json", "yaml",
-                                     "po", "xml", "ios-strings", "arb", "csv"
-  --service <translationService>     One of "openai", "typechat",
-                                     "typechat-manual", "manual",
-                                     "sync-without-translate",
-                                     "google-translate", "azure",
-                                     "key-as-translation"
-  --serviceConfig <serviceKey>       supply configuration for a translation
-                                     service (either a path to a key-file or an
-                                     API-key)
-  --matcher <matcher>                One of "none", "icu", "i18next", "sprintf"
-                                     (default: "none")
-  --prompt <prompt>                  supply a prompt for the AI translation
-                                     service
-  -v, --version                      output the version number
-  -h, --help                         display help for command
+  --srcFile <sourceFile>          The source PO file to be translated
+  --srcLng <sourceLanguage>       A language code for the source language
+  --srcFormat <sourceFileFormat>  One of "po", "flat-json", "nested-json", "yaml", "xml", etc.
+  --targetFile <targetFile>       The target file for the translations
+  --targetLng <targetLanguage>    A language code for the target language
+  --targetFormat <targetFileFormat>  Target file format (usually same as srcFormat)
+  --service <translationService>  One of "openai", "typechat", "google-translate", "azure", etc.
+  --serviceConfig <serviceKey>    API key for the translation service
+  --sourceOverride <mapping>      Override source language (e.g., "zh-Hant:zh-Hans,pt-BR:pt-PT")
+  --baseUrl <url>                 Custom API base URL for OpenAI-compatible APIs
+  --prompt <prompt>               Additional instructions for AI translation
+  --matcher <matcher>             Interpolation matcher: "none", "icu", "i18next", "sprintf"
+  -v, --version                   Output the version number
+  -h, --help                      Display help
 ```
 
-## Prompt Examples
+## Available Translation Services
 
-You can use the `--prompt` parameter to provide specific instructions to the translation service. Here's an example:
+| Service | Description | Config Required |
+|---------|-------------|-----------------|
+| `openai` | OpenAI GPT models | API key via `--serviceConfig` |
+| `typechat` | TypeChat with OpenAI/compatible API | `OPENAI_API_KEY` env var |
+| `google-translate` | Google Cloud Translation | Service account JSON path |
+| `azure` | Azure Cognitive Services | API key |
+| `sync-without-translate` | Copy without translation | None |
+| `manual` | Manual typing | None |
+
+## Environment Variables
+
+For OpenAI service:
+- `OPENAI_BASE_URL` - Custom API base URL for OpenAI-compatible APIs (e.g., DeepSeek, Ollama)
+
+For TypeChat service:
+- `OPENAI_API_KEY` - Your OpenAI API key
+- `OPENAI_MODEL` - Model to use (default: `gpt-4o-mini-2024-07-18`)
+- `OPENAI_ENDPOINT` - Custom API endpoint (for Azure OpenAI or compatible APIs)
+- `TYPECHAT_RPM` - Requests per minute limit
+- `OPEN_AI_BATCH_SIZE` - Batch size for translation (default: 10)
+
+### Using OpenAI-Compatible APIs
+
+You can use any OpenAI-compatible API by setting the base URL:
 
 ```bash
-attranslate --srcFile=json-simple/en.json --srcLng=English --srcFormat=nested-json \
-           --targetFile=json-simple/es.json --targetLng=Spanish --targetFormat=nested-json \
-           --service=openai \
-           --prompt="I am building a healthcare app for medical professionals. Technical terms like 'EKG', 'MRI', 'CT scan', 'blood pressure', 'pulse oximeter', and 'vital signs' should remain in English. Please maintain proper medical terminology and formal tone in translations."
+# Using DeepSeek
+export OPENAI_BASE_URL="https://api.deepseek.com/v1"
+lingui-po-translate --service=openai --serviceConfig="YOUR_DEEPSEEK_KEY" ...
+
+# Using local Ollama
+export OPENAI_BASE_URL="http://localhost:11434/v1"
+lingui-po-translate --service=openai --serviceConfig="ollama" ...
+
+# Or via CLI argument (takes precedence over env var)
+lingui-po-translate --baseUrl="https://api.deepseek.com/v1" --serviceConfig="YOUR_KEY" ...
 ```
 
-This prompt will ensure that technical terms remain in English while translating the rest of the content. You can customize the prompt based on your specific needs, such as:
-- Specifying which terms should remain untranslated
-- Requesting specific capitalization rules
-- Providing context about your application domain
-- Setting tone or style preferences for translations
+## Custom Prompts
 
-# Contributors
+Provide additional instructions to the AI:
 
-We would like to thank all contributors who have helped improve attranslate:
+```bash
+lingui-po-translate \
+  --srcFile=locales/en.po \
+  --targetFile=locales/ja.po \
+  --targetLng=ja \
+  --service=openai \
+  --serviceConfig="YOUR_API_KEY" \
+  --prompt="This is a medical application. Keep technical terms like 'MRI', 'CT scan' in English. Use polite Japanese (敬語)."
+```
 
-- [@esuljic](https://github.com/esuljic): Added the prompt parameter feature for AI services (OpenAI and TypeChat).
+## Weblate Integration
+
+For entries marked with `@manual`, the tool copies the original text to `msgstr`. This prevents Weblate from flagging them as "untranslated".
+
+To configure Weblate to ignore these entries:
+1. The entries will have the original English text as the translation
+2. Configure Weblate checks to ignore "unchanged translation" for entries with specific comments
+
+## License
+
+GPL
+
+## Credits
+
+Based on [attranslate](https://github.com/fkirc/attranslate) by Felix Kirchengast.

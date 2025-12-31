@@ -60,6 +60,14 @@ export function run(process: NodeJS.Process, cliBinDir: string): void {
       "--prompt <prompt>",
       "supply a prompt for the AI translation service"
     )
+    .option(
+      "--sourceOverride <mapping>",
+      "override source language for specific targets (e.g., 'zh-Hant:zh-Hans,pt-BR:pt-PT')"
+    )
+    .option(
+      "--baseUrl <url>",
+      "custom API base URL for OpenAI-compatible services (e.g., 'https://api.openai.com/v1')"
+    )
     .version(extractVersion({ cliBinDir }), "-v, --version")
     .parse(process.argv);
 
@@ -79,6 +87,8 @@ export function run(process: NodeJS.Process, cliBinDir: string): void {
     serviceConfig: commander.opts().serviceConfig,
     matcher: commander.opts().matcher,
     prompt: commander.opts().prompt,
+    sourceOverride: commander.opts().sourceOverride,
+    baseUrl: commander.opts().baseUrl,
   };
   translateCli(args)
     .then(() => {

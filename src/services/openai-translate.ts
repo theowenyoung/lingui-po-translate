@@ -9,23 +9,23 @@ import { logFatal } from "../util/util";
 import { chunk, flatten } from "lodash";
 
 async function translateSingleString(
-  key: string,
-  str: string,
+  tString: TString,
   args: TServiceArgs
 ): Promise<string> {
   const OPENAI_API_KEY = args.serviceConfig;
   if (!OPENAI_API_KEY || !OPENAI_API_KEY.trim().length) {
     logFatal(
-      'Missing OpenAI API Key: Please get an API key from https://platform.openai.com/account/api-keys and then call attranslate with --serviceConfig="YOUR API KEY"'
+      'Missing OpenAI API Key: Please get an API key from https://platform.openai.com/account/api-keys and then call lingui-po-translate with --serviceConfig="YOUR API KEY"'
     );
   }
 
   const configuration = new Configuration({
     apiKey: OPENAI_API_KEY,
+    basePath: args.baseUrl ?? process.env.OPENAI_BASE_URL ?? undefined,
   });
   const openai = new OpenAIApi(configuration);
 
-  const prompt = generatePrompt(str, key, args);
+  const prompt = generatePrompt(tString, args);
 
   const messages: ChatCompletionRequestMessage[] = [
     {
@@ -66,13 +66,20 @@ async function translateSingleString(
   }
 }
 
-function generatePrompt(str: string, key: string, args: TServiceArgs) {
-  const capitalizedText = str;
+function generatePrompt(tString: TString, args: TServiceArgs) {
+  const capitalizedText = tString.value;
   const initialPrompt = `only translate my software string from ${args.srcLng} to ${args.targetLng}. don't chat or explain. Using the correct terms for computer software in the target language, only show target language never repeat string. if you don't find something to translate, don't respond`;
+
+  let contextInfo = `\n\nkey (used for context): ${tString.key}`;
+  if (tString.context) {
+    contextInfo += `\n\ncontext: ${tString.context}`;
+  }
+
   return (
     initialPrompt +
     (args.prompt ? `\n\n${args.prompt}` : "") +
-    `\n\nkey (used for context): ${key}\n\nstring to translate: ${capitalizedText}`
+    contextInfo +
+    `\n\nstring to translate: ${capitalizedText}`
   );
 }
 
@@ -84,11 +91,7 @@ async function translateBatch(
     "Translate a batch of " + batch.length + " strings with OpenAI..."
   );
   const promises: Promise<TResult>[] = batch.map(async (tString: TString) => {
-    const rawResult = await translateSingleString(
-      tString.key,
-      tString.value,
-      args
-    );
+    const rawResult = await translateSingleString(tString, args);
     const result: TResult = {
       key: tString.key,
       translated: rawResult.trim(),

@@ -34,6 +34,6 @@ export OPEN_AI_BATCH_SIZE="20"
 # TYPECHAT_SCHEMA_COMMENT can be used to give the model more context
 export TYPECHAT_SCHEMA_COMMENT="Translations for a chess game"
 
-# Run attranslate
-attranslate --srcFormat=yaml --targetFormat=yaml --srcFile=en.yaml --targetFile=de.xml --srcLng=English --targetLng=German --service=typechat
+# Run lingui-po-translate
+lingui-po-translate --srcFormat=po --targetFormat=po --srcFile=en.po --targetFile=de.po --srcLng=English --targetLng=German --service=typechat
 ```

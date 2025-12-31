@@ -8,6 +8,7 @@ import { TSet } from "../../core/core-definitions";
 import { ReadTFileArgs, WriteTFileArgs } from "../file-format-definitions";
 import { logParseError } from "../common/parse-utils";
 import { potCache } from "./po-files";
+import { parseExtractedComment } from "./comment-parser";
 
 function mergePotComments(args: {
   source: GetTextComment | null;
@@ -39,8 +40,16 @@ export function extractPotTranslations(
       tSet.set(key, value);
     }
     const comments = getText.comments;
-    if (typeof key === "string" && comments) {
-      potCache.insert({ path: args.path, key, entry: { comments } });
+    if (typeof key === "string") {
+      const parsedComment = parseExtractedComment(comments?.extracted);
+      potCache.insert({
+        path: args.path,
+        key,
+        entry: {
+          comments: comments ?? ({} as GetTextComment),
+          parsedComment,
+        },
+      });
     }
   });
   return tSet;
@@ -98,7 +107,7 @@ export function parsePotFile(
     if (!potFile.headers) {
       potFile.headers = {};
     }
-    potFile.headers["X-Generator"] = "attranslate";
+    potFile.headers["X-Generator"] = "lingui-po-translate";
     return potFile;
   } catch (e) {
     console.error(e);

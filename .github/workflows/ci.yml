@@ -21,6 +21,9 @@ jobs:
         os: [ 'ubuntu-latest', 'macos-latest', 'windows-latest' ]
     runs-on: ${{ matrix.os }}
     timeout-minutes: 15
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      OPENAI_BASE_URL: ${{ secrets.OPENAI_BASE_URL }}
     steps:
       - uses: actions/setup-node@v1
         with:
@@ -39,8 +42,8 @@ jobs:
       - run: npm run build
       - if: ${{ matrix.os != 'macos-latest' && matrix.os != 'windows-latest' }}
         run: |
-          timeout 0.2s time ./bin/attranslate --version
-          timeout 0.2s time ./bin/attranslate --help
+          timeout 0.2s time ./bin/lingui-po-translate --version
+          timeout 0.2s time ./bin/lingui-po-translate --help
       - if: ${{ matrix.os != 'windows-latest' }}
         run: npm run test
       - if: ${{ matrix.os == 'windows-latest' }}
@@ -55,19 +58,3 @@ jobs:
           git push origin && git push origin --tags
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-  production_install:
-    strategy:
-      matrix:
-        node: [ '16', '18' ]
-        os: [ 'ubuntu-latest', 'macos-latest', 'windows-latest' ]
-    runs-on: ${{ matrix.os }}
-    timeout-minutes: 15
-    steps:
-      - uses: actions/setup-node@v1
-        with:
-          node-version: ${{ matrix.node }}
-      - run: node --version
-      - run: npm install --global attranslate
-      - run: attranslate --help
-      - run: attranslate --version

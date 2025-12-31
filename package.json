@@ -1,26 +1,28 @@
 {
-  "name": "attranslate",
-  "version": "2.2.1",
-  "description": "Semi-automated Text Translator for Websites and Apps",
+  "name": "lingui-po-translate",
+  "version": "1.0.0",
+  "description": "AI-powered translation tool for Lingui PO files with context-aware translations",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/fkirc/attranslate.git"
+    "url": "git+https://github.com/theowenyoung/lingui-po-translate.git"
   },
   "keywords": [
-    "semi-automated translation",
+    "lingui",
+    "i18n",
+    "translation",
+    "ai-translate",
     "openai-translate",
-    "google-translate",
-    "website translation",
-    "mobile app translation",
-    "i18n"
+    "po-file",
+    "gettext",
+    "localization"
   ],
   "license": "GPL",
   "bugs": {
-    "url": "https://github.com/fkirc/attranslate/issues"
+    "url": "https://github.com/theowenyoung/lingui-po-translate/issues"
   },
-  "homepage": "https://github.com/fkirc/attranslate#readme",
+  "homepage": "https://github.com/theowenyoung/lingui-po-translate#readme",
   "bin": {
-    "attranslate": "bin/attranslate"
+    "lingui-po-translate": "bin/lingui-po-translate"
   },
   "main": "./dist/index.js",
   "files": [

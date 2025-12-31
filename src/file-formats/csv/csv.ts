@@ -81,7 +81,7 @@ export class SimpleCsv implements TFileFormat {
 
   writeTFile(args: WriteTFileArgs): void {
     console.log(
-      "Warning: Currently, 'attranslate' may overwrite pre-existing CSV-content. This might change in future versions."
+      "Warning: Currently, 'lingui-po-translate' may overwrite pre-existing CSV-content. This might change in future versions."
     );
     const lines: string[] = [];
     const header: string = ["keys", args.lng].join(CSV_SEPARATOR);

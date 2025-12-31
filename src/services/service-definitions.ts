@@ -8,6 +8,8 @@ export interface TResult {
 export interface TString {
   key: string;
   value: string;
+  /** Context from @context comment for AI translation */
+  context?: string;
 }
 
 export interface TServiceArgs {
@@ -16,6 +18,7 @@ export interface TServiceArgs {
   targetLng: string;
   serviceConfig: string | null;
   prompt: string;
+  baseUrl: string | null;
 }
 
 export interface TService {

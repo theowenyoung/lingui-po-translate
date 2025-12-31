@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Content-Type: text/plain\n"
-"X-Generator: attranslate\n"
+"X-Generator: lingui-po-translate\n"
 
 msgid "A section of text like this is known as a text segment."
 msgstr "First"

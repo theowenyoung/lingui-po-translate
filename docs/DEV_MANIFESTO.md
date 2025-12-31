@@ -1,10 +1,10 @@
 # Dev Manifesto
 
-The development of `attranslate` is guided by the principles that are described in this document.
+The development of `lingui-po-translate` is guided by the principles that are described in this document.
 
 ## Focus on "Time-to-Value"
 
-`attranslate` is a semi-automated tool.
+`lingui-po-translate` is a semi-automated tool.
 Semi-automated tools are only valuable if the setup-cost is smaller than the reward of automation.
 Therefore, it is important to minimize setup-time for new users:
 
@@ -15,8 +15,8 @@ Therefore, it is important to minimize setup-time for new users:
 
 ## Avoid being opinionated
 
-`attranslate` is a generic tool that should not enforce any specific workflows. 
-For example, `attranslate` should not enforce any specific directory structure.
+`lingui-po-translate` is a generic tool that should not enforce any specific workflows. 
+For example, `lingui-po-translate` should not enforce any specific directory structure.
 
 ## Test Performance Driven Development 
 

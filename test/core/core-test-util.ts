@@ -87,8 +87,11 @@ export const commonArgs: Omit<CoreArgs, "oldTarget" | "src"> = {
   serviceConfig: "invalid-core-key",
   matcher: "icu",
   srcLng: "en",
+  srcFile: "test.po",
   targetLng: "de",
   prompt: "",
+  sourceOverride: new Map(),
+  baseUrl: null,
 };
 
 export async function translateCoreAssert(

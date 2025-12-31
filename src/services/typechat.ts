@@ -39,12 +39,21 @@ function generatePrompt(batch: TString[], args: TServiceArgs): string {
     return entries;
   }, {});
 
+  // Build context info for entries that have context
+  const contextInfo = batch
+    .filter((tString) => tString.context)
+    .map((tString) => `- "${tString.key}": ${tString.context}`)
+    .join("\n");
+
   const basePrompt = `Translate the following JSON object from ${args.srcLng} into ${args.targetLng}:\n`;
   const customPrompt = args.prompt
     ? `\nAdditional instructions: ${args.prompt}\n\n`
     : "\n";
+  const contextPrompt = contextInfo
+    ? `\nContext for specific keys:\n${contextInfo}\n\n`
+    : "";
 
-  return basePrompt + customPrompt + JSON.stringify(entries, null, 2);
+  return basePrompt + customPrompt + contextPrompt + JSON.stringify(entries, null, 2);
 }
 
 function parseResponse(

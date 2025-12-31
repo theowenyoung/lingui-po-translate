@@ -17,6 +17,9 @@ export class FormatCache<E, A> {
   findFileCache(path: string): FileCache<E, A> | null {
     return this.fileCaches.find((fileCache) => fileCache.path === path) ?? null;
   }
+  lookupFileCache(path: string): FileCache<E, A> | null {
+    return this.findFileCache(path);
+  }
   insertFileCache(fileCache: FileCache<E, A>) {
     this.fileCaches.push(fileCache);
   }

@@ -6,7 +6,7 @@ en:
     hello_user: Hello %{username}
     # comments are treated as translation descriptions
     # belonging to the key-value pair
-    welcome: Welcome to attranslate!
+    welcome: Welcome to lingui-po-translate!
   about:
     # example of an array in YAML
     features_array:

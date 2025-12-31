@@ -6,9 +6,9 @@ SERVICE_ACCOUNT_KEY="gcloud/gcloud_service_account.json"
 BASE_DIR=po-generic
 COMMON_ARGS=( "--srcFile=$BASE_DIR/en.po" "--srcLng=en" "--srcFormat=po" "--targetFormat=po" "--service=google-translate" "--serviceConfig=$SERVICE_ACCOUNT_KEY" )
 
-# Run "npm install --global attranslate" before you try this example.
-attranslate "${COMMON_ARGS[@]}" --targetFile=$BASE_DIR/es.po --targetLng=es
-attranslate "${COMMON_ARGS[@]}" --targetFile=$BASE_DIR/de.po --targetLng=de
+# Run "npm install --global lingui-po-translate" before you try this example.
+lingui-po-translate "${COMMON_ARGS[@]}" --targetFile=$BASE_DIR/es.po --targetLng=es
+lingui-po-translate "${COMMON_ARGS[@]}" --targetFile=$BASE_DIR/de.po --targetLng=de
 
 # Convert a YAML to PO (just for the sake of test-coverage)
-attranslate --srcFile="$BASE_DIR/nested-fruits.yml" --srcFormat=yaml --srcLng=x --targetFile=$BASE_DIR/nested-fruits.po --targetFormat=po --targetLng=x --service=sync-without-translate
+lingui-po-translate --srcFile="$BASE_DIR/nested-fruits.yml" --srcFormat=yaml --srcLng=x --targetFile=$BASE_DIR/nested-fruits.po --targetFormat=po --targetLng=x --service=sync-without-translate
