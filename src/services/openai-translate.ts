@@ -7,7 +7,6 @@ import {
   TString,
 } from "./service-definitions";
 import { logFatal } from "../util/util";
-import { chunk, flatten } from "lodash";
 
 async function translateSingleString(
   tString: TString,
@@ -76,7 +75,7 @@ async function translateSingleString(
     if (typeof e.message === "string") {
       const responseData = e?.response?.data;
       const detail = responseData?.error?.message ?? JSON.stringify(responseData);
-      logFatal(
+      throw new Error(
         "OpenAI: " +
           e.message +
           (detail ? ", Detail: " + detail : "") +
@@ -144,33 +143,69 @@ Task: Translate the UI string from ${args.srcLng} to ${args.targetLng}.
   return { systemPrompt, userPrompt };
 }
 
-async function translateBatch(
-  batch: TString[],
-  args: TServiceArgs
+async function translateWithConcurrency(
+  strings: TString[],
+  args: TServiceArgs,
+  concurrency: number
 ): Promise<TResult[]> {
+  const results: TResult[] = [];
+  const errors: { key: string; error: string }[] = [];
+  let index = 0;
+  let finished = 0;
+
   console.log(
-    "Translate a batch of " + batch.length + " strings with OpenAI..."
+    `Translating ${strings.length} strings with OpenAI (concurrency: ${concurrency})...`
   );
-  const promises: Promise<TResult>[] = batch.map(async (tString: TString) => {
-    const rawResult = await translateSingleString(tString, args);
-    const result: TResult = {
-      key: tString.key,
-      translated: rawResult.trim(),
-    };
-    return result;
+
+  return new Promise((resolve) => {
+    function startNext() {
+      if (index >= strings.length) {
+        if (finished === strings.length) {
+          if (errors.length > 0) {
+            console.error(
+              `\nTranslation completed with ${errors.length} error(s):`
+            );
+            for (const { key, error } of errors) {
+              console.error(`  - "${key}": ${error}`);
+            }
+          }
+          resolve(results.filter(Boolean));
+        }
+        return;
+      }
+
+      const currentIndex = index++;
+      const tString = strings[currentIndex];
+
+      translateSingleString(tString, args)
+        .then((rawResult) => {
+          results[currentIndex] = {
+            key: tString.key,
+            translated: rawResult.trim(),
+          };
+          finished++;
+          console.log(`  Translated ${finished}/${strings.length}`);
+          startNext();
+        })
+        .catch((e: Error) => {
+          errors.push({ key: tString.key, error: e.message });
+          finished++;
+          console.error(
+            `  Failed ${finished}/${strings.length}: "${tString.key}" - ${e.message}`
+          );
+          startNext();
+        });
+    }
+
+    const initialCount = Math.min(concurrency, strings.length);
+    for (let i = 0; i < initialCount; i++) {
+      startNext();
+    }
   });
-  const resolvedPromises: TResult[] = await Promise.all(promises);
-  return resolvedPromises;
 }
 
 export class OpenAITranslate implements TService {
   async translateStrings(args: TServiceArgs) {
-    const batches: TString[][] = chunk(args.strings, 5);
-    const results: TResult[][] = [];
-    for (const batch of batches) {
-      const result = await translateBatch(batch, args);
-      results.push(result);
-    }
-    return flatten(results);
+    return translateWithConcurrency(args.strings, args, 5);
   }
 }
