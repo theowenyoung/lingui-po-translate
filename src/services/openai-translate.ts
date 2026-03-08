@@ -61,7 +61,10 @@ async function translateSingleString(
     });
 
     if (args.debug) {
-      console.log("\n[DEBUG] OpenAI Full Response:", JSON.stringify(completion.data, null, 2));
+      console.log(
+        "\n[DEBUG] OpenAI Full Response:",
+        JSON.stringify(completion.data, null, 2)
+      );
     }
     const text = completion.data.choices[0].message?.content;
     if (text == undefined) {
@@ -87,25 +90,53 @@ interface GeneratedPrompt {
   userPrompt: string;
 }
 
+function getChineseVariantInstruction(targetLng: string): string {
+  const simplified = ["zh-CN", "zh-Hans", "zh-SG", "zh"];
+  const traditional = ["zh-TW", "zh-Hant", "zh-HK", "zh-MO"];
+
+  if (traditional.some((code) => targetLng.startsWith(code))) {
+    if (targetLng.startsWith("zh-HK") || targetLng.startsWith("zh-MO")) {
+      return "\n- Use Traditional Chinese with Hong Kong conventions (e.g., 檔案 not 文件, 視窗 not 窗口)";
+    }
+    return "\n- Use Traditional Chinese with **Taiwan conventions** (e.g., 檔案 not 文件, 軟體 not 軟件, 使用者 not 用戶)";
+  }
+
+  if (simplified.some((code) => targetLng.startsWith(code))) {
+    return "\n- Use Simplified Chinese (Mainland China conventions, e.g., 文件 not 檔案, 用户 not 使用者)";
+  }
+
+  return "";
+}
+
 function generatePrompt(tString: TString, args: TServiceArgs): GeneratedPrompt {
-  // System: Role, language pair, rules, context, and custom instructions
-  let systemPrompt = `You are a software UI translator.
+  const systemPrompt = `You are an expert software UI translator specializing in i18n localization.
+Task: Translate the UI string from ${args.srcLng} to ${args.targetLng}.
 
-Task: Translate from ${args.srcLng} to ${args.targetLng}.
-Input: User provides text in <source> tags.
-Output: Return only the translated text, without any tags or explanations.
-Rules: Keep all placeholders ({name}, %s, %d), HTML tags, and formatting unchanged.`;
+## Output Rules
+- Return ONLY the translated text — no tags, no quotes, no explanation
+- If the source text requires no translation (numbers, URLs, code, symbols), return it as-is
+- Never add punctuation that wasn't in the original
 
-  if (tString.context) {
-    systemPrompt += `\nContext: ${tString.context}`;
-  }
-  if (args.prompt) {
-    systemPrompt += `\nNote: ${args.prompt}`;
-  }
+## Translation Rules
+- Preserve ALL placeholders exactly: {name}, {{count}}, %s, %d, %(var)s, etc.
+- Preserve ALL HTML/JSX tags and their attributes: <br/>, <strong>, <0>, etc.
+- Preserve whitespace, newlines, and leading/trailing spaces
+- Do NOT translate: brand names, product names, technical identifiers
 
-  // User: Text wrapped in XML tags
+## UI Localization Guidelines
+- Match the tone of the original: formal stays formal, casual stays casual
+- For buttons/labels: use concise, action-oriented phrasing in ${args.targetLng}
+- For error messages: keep the same level of urgency
+- For plurals: use the grammatically correct form for ${args.targetLng}
+- Prefer natural, idiomatic ${
+    args.targetLng
+  } over literal translation${getChineseVariantInstruction(args.targetLng)}${
+    tString.context
+      ? `\n\n## Context (IMPORTANT)\nThe following context describes where/how this string is used in the UI. **Let it guide your word choice, tone, and length.**\n${tString.context}`
+      : ""
+  }${args.prompt ? `\n\n## Additional Instructions\n${args.prompt}` : ""}`;
+
   const userPrompt = `<source>${tString.value}</source>`;
-
   return { systemPrompt, userPrompt };
 }
 

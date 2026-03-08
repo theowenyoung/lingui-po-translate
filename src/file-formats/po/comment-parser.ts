@@ -6,6 +6,8 @@ export interface ParsedComment {
   manual: string[];
   /** Context to be passed to AI translation service */
   context: string;
+  /** Raw PO comment block (extracted + references) for AI context */
+  rawComment?: string;
 }
 
 /**

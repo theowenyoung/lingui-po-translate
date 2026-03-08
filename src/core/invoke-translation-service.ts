@@ -75,7 +75,7 @@ async function runTranslationService(
       key: rawString.key,
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       value: replacers.get(rawString.key)!.clean,
-      context: parsed?.context,
+      context: parsed?.rawComment ?? parsed?.context,
     };
   });
 

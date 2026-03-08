@@ -44,6 +44,7 @@ export function extractPotTranslations(
     const comments = getText.comments;
     if (typeof key === "string") {
       const parsedComment = parseExtractedComment(comments?.extracted);
+      parsedComment.rawComment = buildRawComment(comments);
       potCache.insert({
         path: args.path,
         key,
@@ -115,6 +116,34 @@ export function parsePotFile(
     console.error(e);
     logParseError("GetText parsing error", args);
   }
+}
+
+function buildRawComment(
+  comments: GetTextComment | undefined
+): string | undefined {
+  if (!comments) return undefined;
+
+  const parts: string[] = [];
+
+  if (comments.extracted) {
+    for (const line of comments.extracted.split("\n")) {
+      const trimmed = line.trim();
+      if (trimmed) {
+        parts.push(`#. ${trimmed}`);
+      }
+    }
+  }
+
+  if (typeof comments.reference === "string" && comments.reference.trim()) {
+    for (const line of comments.reference.split("\n")) {
+      const trimmed = line.trim();
+      if (trimmed) {
+        parts.push(`#: ${trimmed}`);
+      }
+    }
+  }
+
+  return parts.length > 0 ? parts.join("\n") : undefined;
 }
 
 function traversePot(
