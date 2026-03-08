@@ -1,5 +1,7 @@
 import { nodeVersionSatisfies } from "../util/util";
 
+export const DEFAULT_MODEL = "gpt-5-mini";
+
 export interface TResult {
   key: string;
   translated: string;

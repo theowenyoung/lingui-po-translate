@@ -1,5 +1,6 @@
 import { Configuration, OpenAIApi, ChatCompletionRequestMessage } from "openai";
 import {
+  DEFAULT_MODEL,
   TResult,
   TService,
   TServiceArgs,
@@ -38,7 +39,7 @@ async function translateSingleString(
     },
   ];
 
-  const model = args.model ?? "gpt-4o-mini";
+  const model = args.model ?? DEFAULT_MODEL;
 
   if (args.debug) {
     console.log("\n[DEBUG] OpenAI Request:");
@@ -56,9 +57,9 @@ async function translateSingleString(
     const completion = await openai.createChatCompletion({
       model,
       messages: messages,
-      temperature: 0,
-      max_tokens: 2048,
-    });
+      max_completion_tokens: 2048,
+      reasoning_effort: "low",
+    } as any);
 
     if (args.debug) {
       console.log(
@@ -73,9 +74,12 @@ async function translateSingleString(
     return text;
   } catch (e: any) {
     if (typeof e.message === "string") {
+      const responseData = e?.response?.data;
+      const detail = responseData?.error?.message ?? JSON.stringify(responseData);
       logFatal(
         "OpenAI: " +
           e.message +
+          (detail ? ", Detail: " + detail : "") +
           ", Status text: " +
           JSON.stringify(e?.response?.statusText)
       );
@@ -132,7 +136,7 @@ Task: Translate the UI string from ${args.srcLng} to ${args.targetLng}.
     args.targetLng
   } over literal translation${getChineseVariantInstruction(args.targetLng)}${
     tString.context
-      ? `\n\n## Context (IMPORTANT)\nThe following context describes where/how this string is used in the UI. **Let it guide your word choice, tone, and length.**\n${tString.context}`
+      ? `\n\n## Context (IMPORTANT)\nThe following context describes where/how this string is used in the UI. **Use it to disambiguate meaning and choose the correct translation. Do NOT default to the most common meaning — pick the one that fits the context.**\n${tString.context}`
       : ""
   }${args.prompt ? `\n\n## Additional Instructions\n${args.prompt}` : ""}`;
 
@@ -161,7 +165,7 @@ async function translateBatch(
 
 export class OpenAITranslate implements TService {
   async translateStrings(args: TServiceArgs) {
-    const batches: TString[][] = chunk(args.strings, 10);
+    const batches: TString[][] = chunk(args.strings, 5);
     const results: TResult[][] = [];
     for (const batch of batches) {
       const result = await translateBatch(batch, args);

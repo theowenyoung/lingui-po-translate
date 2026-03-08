@@ -127,19 +127,32 @@ function buildRawComment(
 
   if (comments.extracted) {
     for (const line of comments.extracted.split("\n")) {
-      const trimmed = line.trim();
+      let trimmed = line.trim();
+      if (!trimmed) continue;
+      // Strip @context: prefix for cleaner output
+      if (trimmed.startsWith("@context:")) {
+        trimmed = trimmed.substring("@context:".length).trim();
+      } else if (trimmed.startsWith("@context ")) {
+        trimmed = trimmed.substring("@context ".length).trim();
+      }
+      // Skip @manual directives - not useful for translation
+      if (trimmed.startsWith("@manual:") || trimmed.startsWith("@manual ")) continue;
       if (trimmed) {
-        parts.push(`#. ${trimmed}`);
+        parts.push(`- ${trimmed}`);
       }
     }
   }
 
   if (typeof comments.reference === "string" && comments.reference.trim()) {
+    const refs: string[] = [];
     for (const line of comments.reference.split("\n")) {
       const trimmed = line.trim();
       if (trimmed) {
-        parts.push(`#: ${trimmed}`);
+        refs.push(trimmed);
       }
+    }
+    if (refs.length) {
+      parts.push(`Files: ${refs.join(", ")}`);
     }
   }
 

@@ -10,6 +10,7 @@ import {
 } from "typechat";
 import { logFatal } from "../util/util";
 import {
+  DEFAULT_MODEL,
   TResult,
   TService,
   TServiceArgs,
@@ -94,11 +95,12 @@ async function translateBatch(
 }
 
 function createLanguageModel(
-  env: Record<string, string | undefined>
+  env: Record<string, string | undefined>,
+  args: TServiceArgs
 ): TypeChatLanguageModel {
   const apiKey =
     env.OPENAI_API_KEY ?? missingEnvironmentVariable("OPENAI_API_KEY");
-  const model = env.OPENAI_MODEL ?? "gpt-4o-mini-2024-07-18";
+  const model = args.model ?? env.OPENAI_MODEL ?? DEFAULT_MODEL;
   const url =
     env.OPENAI_ENDPOINT ?? "https://api.openai.com/v1/chat/completions";
 
@@ -187,7 +189,7 @@ export class TypeChatTranslate implements TService {
     const results: TResult[][] = [];
     const model = this.manual
       ? createManualModel()
-      : createLanguageModel(process.env);
+      : createLanguageModel(process.env, args);
     for(var i = 0; i < batches.length; i++) {
       const batch = batches[i]
       const start = new Date()
@@ -233,8 +235,8 @@ function createAxiosLanguageModel(
     const retryPauseMs = model.retryPauseMs ?? 1000;
     while (true) {
       const params = {
-        max_tokens: 2048,
-        temperature: 0,
+        max_completion_tokens: 2048,
+        reasoning_effort: "low",
         ...defaultParams,
         messages: [{ role: "user", content: prompt }],
         n: 1,

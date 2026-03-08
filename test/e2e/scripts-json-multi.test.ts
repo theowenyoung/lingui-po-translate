@@ -25,7 +25,7 @@ test("invalid OpenAI key", async () => {
     { ...process.env, OPENAI_BASE_URL: undefined }
   );
   expect(output).toContain(
-    "error: OpenAI: Request failed with status code 401, Status text:"
+    "error: OpenAI: Request failed with status code 401"
   );
 });
 

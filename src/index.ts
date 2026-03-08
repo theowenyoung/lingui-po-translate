@@ -74,7 +74,7 @@ export function run(process: NodeJS.Process, cliBinDir: string): void {
     )
     .option(
       "--model <model>",
-      "model to use for AI translation services (e.g., gpt-4o-mini, gpt-4o)"
+      "model to use for AI translation services (default: gpt-5-mini)"
     )
     .version(extractVersion({ cliBinDir }), "-v, --version")
     .parse(process.argv);
