@@ -1,4 +1,5 @@
 import { nodeVersionSatisfies } from "../util/util";
+import { GlossaryEntry } from "../glossary/glossary";
 
 export const DEFAULT_MODEL = "gpt-5-mini";
 
@@ -12,6 +13,8 @@ export interface TString {
   value: string;
   /** Context from @context comment for AI translation */
   context?: string;
+  /** Matched glossary entries for this string */
+  glossary?: GlossaryEntry[];
 }
 
 export interface TServiceArgs {

@@ -10,6 +10,7 @@ test("--help", async () => {
     maxTime: offlineMaxTime,
   });
   expect(output.includes('One of "openai",'));
+  expect(output.includes("--glossaryFile <path>")).toBe(true);
 });
 
 test("-h", async () => {
@@ -18,6 +19,7 @@ test("-h", async () => {
     maxTime: offlineMaxTime,
   });
   expect(output.includes('One of "openai",'));
+  expect(output.includes("--glossaryFile <path>")).toBe(true);
 });
 
 test("no arguments", async () => {

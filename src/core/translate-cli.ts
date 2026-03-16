@@ -4,6 +4,7 @@ import { CliArgs, CoreArgs, parseSourceOverride, TSet } from "./core-definitions
 import { areEqual } from "./tset-ops";
 import { checkDir, checkNotDir, getDebugPath, logFatal } from "../util/util";
 import { readTFileCore, writeTFileCore } from "./core-util";
+import { readGlossaryFile } from "../glossary/glossary";
 import path from "path";
 import {
   getTFileFormatList,
@@ -99,6 +100,7 @@ export async function translateCli(cliArgs: CliArgs) {
     serviceConfig: cliArgs.serviceConfig ?? null,
     matcher: cliArgs.matcher as TMatcherType,
     prompt: cliArgs.prompt ?? "",
+    glossary: readGlossaryFile(cliArgs.glossaryFile),
     sourceOverride: parseSourceOverride(cliArgs.sourceOverride),
     baseUrl: cliArgs.baseUrl ?? null,
     debug: cliArgs.debug ?? false,

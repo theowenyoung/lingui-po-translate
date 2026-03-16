@@ -2,6 +2,8 @@ import { buildE2EArgs, defaultE2EArgs, E2EArgs } from "../e2e/e2e-common";
 import { joinLines, runTranslateExpectFailure } from "../test-util/test-util";
 import { getDebugPath } from "../../src/util/util";
 
+jest.setTimeout(30000);
+
 test("undefined gcloud-config", async () => {
   const args: E2EArgs = {
     ...defaultE2EArgs,

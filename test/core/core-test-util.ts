@@ -90,8 +90,11 @@ export const commonArgs: Omit<CoreArgs, "oldTarget" | "src"> = {
   srcFile: "test.po",
   targetLng: "de",
   prompt: "",
+  glossary: [],
   sourceOverride: new Map(),
   baseUrl: null,
+  debug: false,
+  model: null,
 };
 
 export async function translateCoreAssert(

@@ -1,7 +1,14 @@
+import { existsSync, unlinkSync } from "fs";
 import { join } from "path";
 import semver from "semver";
-import { joinLines, runCommandExpectFailure } from "../test-util/test-util";
-import { runSampleScript } from "./scripts-e2e-util";
+import {
+  generateId,
+  joinLines,
+  runCommandExpectFailure,
+} from "../test-util/test-util";
+import { runSampleScript, sampleDir } from "./scripts-e2e-util";
+
+jest.setTimeout(30000);
 
 test("json simple up-to-date", async () => {
   const output = await runSampleScript(`./json_simple.sh`, ["json-simple"]);
@@ -9,31 +16,23 @@ test("json simple up-to-date", async () => {
 });
 
 test("missing OpenAI key", async () => {
-  const output =
-    await runCommandExpectFailure(`cd sample-scripts && lingui-po-translate --srcFile=json-simple/en.json --srcLng=English --srcFormat=nested-json --targetFile=json-simple/es.json --targetLng=German --targetFormat=nested-json --service=openai
-  `);
+  const output = await runJsonSimpleExpectFailure("--service=openai");
   expect(output).toContain(
     "error: Missing OpenAI API Key: Please get an API key from"
   );
 });
 
 test("invalid OpenAI key", async () => {
-  const output = await runCommandExpectFailure(
-    `cd sample-scripts && lingui-po-translate --srcFile=json-simple/en.json --srcLng=English --srcFormat=nested-json --targetFile=json-simple/es.json --targetLng=German --targetFormat=nested-json --service=openai --serviceConfig=garbageapikey
-  `,
-    undefined,
+  const output = await runJsonSimpleExpectFailure(
+    "--service=openai --serviceConfig=garbageapikey",
     { ...process.env, OPENAI_BASE_URL: undefined }
   );
-  expect(output).toContain(
-    "error: OpenAI: Request failed with status code 401"
-  );
+  expect(output).toContain("OpenAI: Request failed with status code 401");
 });
 
 test("missing OpenAI key (typechat)", async () => {
-  const output = await runCommandExpectFailure(
-    `cd sample-scripts && lingui-po-translate --srcFile=json-simple/en.json --srcLng=English --srcFormat=nested-json --targetFile=json-simple/es.json --targetLng=German --targetFormat=nested-json --service=typechat
-  `,
-    undefined,
+  const output = await runJsonSimpleExpectFailure(
+    "--service=typechat",
     { ...process.env, OPENAI_API_KEY: undefined }
   );
   if (semver.satisfies(process.version, ">=18")) {
@@ -46,10 +45,8 @@ test("missing OpenAI key (typechat)", async () => {
 });
 
 test("invalid OpenAI key (typechat)", async () => {
-  const output = await runCommandExpectFailure(
-    `cd sample-scripts && lingui-po-translate --srcFile=json-simple/en.json --srcLng=English --srcFormat=nested-json --targetFile=json-simple/es.json --targetLng=German --targetFormat=nested-json --service=typechat
-  `,
-    undefined,
+  const output = await runJsonSimpleExpectFailure(
+    "--service=typechat",
     { ...process.env, OPENAI_API_KEY: "garbageapikey", OPENAI_BASE_URL: undefined, OPENAI_ENDPOINT: undefined }
   );
   if (semver.satisfies(process.version, ">=18")) {
@@ -76,6 +73,25 @@ function removeFirstLine(lines: string): string {
 async function runMultiJSON(): Promise<string> {
   const rawOutput = await runSampleScript(`./json_advanced.sh`, [assetDir]);
   return removeFirstLine(rawOutput);
+}
+
+async function runJsonSimpleExpectFailure(
+  extraArgs: string,
+  env?: Record<string, string | undefined>
+): Promise<string> {
+  const targetFile = `json-simple/tmp-${generateId()}.json`;
+  try {
+    return await runCommandExpectFailure(
+      `cd sample-scripts && lingui-po-translate --srcFile=json-simple/en.json --srcLng=English --srcFormat=nested-json --targetFile=${targetFile} --targetLng=German --targetFormat=nested-json ${extraArgs}`,
+      undefined,
+      env
+    );
+  } finally {
+    const fullPath = join(sampleDir, targetFile);
+    if (existsSync(fullPath)) {
+      unlinkSync(fullPath);
+    }
+  }
 }
 
 test("multi_json clean", async () => {

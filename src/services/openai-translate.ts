@@ -6,6 +6,7 @@ import {
   TServiceArgs,
   TString,
 } from "./service-definitions";
+import { buildGlossarySection } from "./glossary-prompt";
 import { logFatal } from "../util/util";
 
 async function translateSingleString(
@@ -129,11 +130,13 @@ Task: Translate the UI string from ${args.srcLng} to ${args.targetLng}.
 ## UI Localization Guidelines
 - Match the tone of the original: formal stays formal, casual stays casual
 - For buttons/labels: use concise, action-oriented phrasing in ${args.targetLng}
-- For error messages: keep the same level of urgency
-- For plurals: use the grammatically correct form for ${args.targetLng}
-- Prefer natural, idiomatic ${
+  - For error messages: keep the same level of urgency
+  - For plurals: use the grammatically correct form for ${args.targetLng}
+  - Prefer natural, idiomatic ${
     args.targetLng
   } over literal translation${getChineseVariantInstruction(args.targetLng)}${
+    buildGlossarySection(tString.glossary)
+  }${
     tString.context
       ? `\n\n## Context (IMPORTANT)\nThe following context describes where/how this string is used in the UI. **Use it to disambiguate meaning and choose the correct translation. Do NOT default to the most common meaning — pick the one that fits the context.**\n${tString.context}`
       : ""
@@ -157,7 +160,7 @@ async function translateWithConcurrency(
     `Translating ${strings.length} strings with OpenAI (concurrency: ${concurrency})...`
   );
 
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     function startNext() {
       if (index >= strings.length) {
         if (finished === strings.length) {
@@ -169,7 +172,12 @@ async function translateWithConcurrency(
               console.error(`  - "${key}": ${error}`);
             }
           }
-          resolve(results.filter(Boolean));
+          const successfulResults = results.filter(Boolean);
+          if (!successfulResults.length && errors.length > 0) {
+            reject(new Error(errors[0].error));
+            return;
+          }
+          resolve(successfulResults);
         }
         return;
       }

@@ -9,17 +9,30 @@ import {
   instantiateTService,
   TResult,
   TServiceArgs,
+  TServiceType,
   TString,
 } from "../services/service-definitions";
 import { getParsedComments } from "../file-formats/po/po-files";
+import { matchGlossaryEntries } from "../glossary/glossary";
+
+const promptAwareServices: TServiceType[] = ["openai", "typechat", "typechat-manual"];
+
+function serviceSupportsPromptAugmentation(service: TServiceType): boolean {
+  return promptAwareServices.includes(service);
+}
 
 export async function invokeTranslationService(
   serviceInputs: TSet,
   args: CoreArgs
 ): Promise<TServiceInvocation> {
-  if (args.prompt && !["openai", "typechat"].includes(args.service)) {
+  if (args.prompt && !serviceSupportsPromptAugmentation(args.service)) {
     console.warn(
-      `Warning: The '--prompt' parameter is only supported by 'openai' and 'typechat' services. Your prompt will be ignored when using '${args.service}'.`
+      `Warning: The '--prompt' parameter is only supported by 'openai', 'typechat', and 'typechat-manual' services. Your prompt will be ignored when using '${args.service}'.`
+    );
+  }
+  if (args.glossary.length && !serviceSupportsPromptAugmentation(args.service)) {
+    console.warn(
+      `Warning: The '--glossaryFile' parameter is only supported by 'openai', 'typechat', and 'typechat-manual' services. Your glossary will be ignored when using '${args.service}'.`
     );
   }
 
@@ -71,11 +84,14 @@ async function runTranslationService(
 
   const replacedInputs: TString[] = rawInputs.map((rawString) => {
     const parsed = parsedComments.get(rawString.key);
+    const cleanValue = replacers.get(rawString.key)!.clean;
+    const glossary = matchGlossaryEntries(cleanValue, args.glossary);
     return {
       key: rawString.key,
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      value: replacers.get(rawString.key)!.clean,
+      value: cleanValue,
       context: parsed?.rawComment ?? parsed?.context,
+      glossary: glossary.length ? glossary : undefined,
     };
   });
 

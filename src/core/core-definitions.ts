@@ -1,5 +1,6 @@
 import { TServiceType } from "../services/service-definitions";
 import { TMatcherType } from "../matchers/matcher-definitions";
+import { GlossaryEntry } from "../glossary/glossary";
 
 export type TSet = Map<string, string | null>;
 
@@ -13,6 +14,7 @@ export interface CoreArgs {
   serviceConfig: string | null;
   matcher: TMatcherType;
   prompt: string;
+  glossary: GlossaryEntry[];
   sourceOverride: SourceOverrideMap;
   baseUrl: string | null;
   debug: boolean;
@@ -48,6 +50,7 @@ export interface CliArgs extends Record<string, string | boolean | undefined> {
   serviceConfig?: string;
   matcher: string;
   prompt?: string;
+  glossaryFile?: string;
   sourceOverride?: string;
   baseUrl?: string;
   debug?: boolean;

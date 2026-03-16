@@ -61,6 +61,10 @@ export function run(process: NodeJS.Process, cliBinDir: string): void {
       "supply a prompt for the AI translation service"
     )
     .option(
+      "--glossaryFile <path>",
+      "YAML glossary file with source/target term mappings for AI translation"
+    )
+    .option(
       "--sourceOverride <mapping>",
       "override source language for specific targets (e.g., 'zh-Hant:zh-Hans,pt-BR:pt-PT')"
     )
@@ -95,6 +99,7 @@ export function run(process: NodeJS.Process, cliBinDir: string): void {
     serviceConfig: commander.opts().serviceConfig,
     matcher: commander.opts().matcher,
     prompt: commander.opts().prompt,
+    glossaryFile: commander.opts().glossaryFile,
     sourceOverride: commander.opts().sourceOverride,
     baseUrl: commander.opts().baseUrl,
     debug: commander.opts().debug,

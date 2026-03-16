@@ -1,0 +1,10 @@
+terms:
+  - source: Workspace
+    target: 工作区
+    note: IDE/workspace concept
+
+  - source: Repository
+    target: 仓库
+
+  - source: Token
+    target: 令牌

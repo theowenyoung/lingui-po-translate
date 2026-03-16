@@ -16,6 +16,7 @@ import {
   TServiceArgs,
   TString,
 } from "./service-definitions";
+import { buildGlossaryByKeySection } from "./glossary-prompt";
 
 const MINUTE_MS = 60*1000;
 
@@ -53,8 +54,15 @@ function generatePrompt(batch: TString[], args: TServiceArgs): string {
   const contextPrompt = contextInfo
     ? `\nContext for specific keys:\n${contextInfo}\n\n`
     : "";
+  const glossaryPrompt = buildGlossaryByKeySection(batch);
 
-  return basePrompt + customPrompt + contextPrompt + JSON.stringify(entries, null, 2);
+  return (
+    basePrompt +
+    customPrompt +
+    contextPrompt +
+    glossaryPrompt +
+    JSON.stringify(entries, null, 2)
+  );
 }
 
 function parseResponse(
