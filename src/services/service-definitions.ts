@@ -26,6 +26,7 @@ export interface TServiceArgs {
   baseUrl: string | null;
   debug: boolean;
   model: string | null;
+  onTranslationResult?: (result: TResult) => void;
 }
 
 export interface TService {

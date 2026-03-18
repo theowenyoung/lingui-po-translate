@@ -202,6 +202,7 @@ export class TypeChatTranslate implements TService {
       const batch = batches[i]
       const start = new Date()
       const result = await translateBatch(model, batch, args, process.env);
+      result.forEach((item) => args.onTranslationResult?.(item));
       results.push(result);
       
       // Sleep to not exceeded the specified requests per minute (RPM)

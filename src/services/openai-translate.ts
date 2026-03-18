@@ -187,12 +187,16 @@ async function translateWithConcurrency(
 
       translateSingleString(tString, args)
         .then((rawResult) => {
-          results[currentIndex] = {
+          const result = {
             key: tString.key,
             translated: rawResult.trim(),
           };
+          results[currentIndex] = result;
+          args.onTranslationResult?.(result);
           finished++;
-          console.log(`  Translated ${finished}/${strings.length}`);
+          if (!args.onTranslationResult) {
+            console.log(`  Translated ${finished}/${strings.length}`);
+          }
           startNext();
         })
         .catch((e: Error) => {

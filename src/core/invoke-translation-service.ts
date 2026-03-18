@@ -21,6 +21,16 @@ function serviceSupportsPromptAugmentation(service: TServiceType): boolean {
   return promptAwareServices.includes(service);
 }
 
+function serviceShouldLogTranslations(service: TServiceType): boolean {
+  return promptAwareServices.includes(service);
+}
+
+function previewLogValue(value: string, maxLength = 120): string {
+  const preview =
+    value.length > maxLength ? `${value.slice(0, maxLength - 3)}...` : value;
+  return JSON.stringify(preview);
+}
+
 export async function invokeTranslationService(
   serviceInputs: TSet,
   args: CoreArgs
@@ -74,10 +84,39 @@ async function runTranslationService(
 ): Promise<TResult[]> {
   const matcher = instantiateTMatcher(args.matcher);
   const replacers = new Map<string, Replacer>();
+  const rawInputsByKey = new Map<string, TString>();
   rawInputs.forEach((rawString) => {
     const replacer = replaceInterpolations(rawString.value, matcher);
     replacers.set(rawString.key, replacer);
+    rawInputsByKey.set(rawString.key, rawString);
   });
+  const loggedKeys = new Set<string>();
+  let loggedCount = 0;
+  const shouldLogTranslations = serviceShouldLogTranslations(args.service);
+
+  const logTranslatedString = (rawResult: TResult) => {
+    if (!shouldLogTranslations || loggedKeys.has(rawResult.key)) {
+      return;
+    }
+
+    const input = rawInputsByKey.get(rawResult.key);
+    const replacer = replacers.get(rawResult.key);
+    if (!input || !replacer) {
+      return;
+    }
+
+    const translated = reInsertInterpolations(
+      rawResult.translated,
+      replacer.replacements
+    );
+    loggedKeys.add(rawResult.key);
+    loggedCount++;
+    console.info(
+      `  [${loggedCount}/${rawInputs.length}] ${previewLogValue(
+        input.value
+      )} -> ${args.targetLng}: ${previewLogValue(translated)}`
+    );
+  };
 
   // Get parsed comments for context
   const parsedComments = getParsedComments(args.srcFile);
@@ -104,6 +143,7 @@ async function runTranslationService(
     baseUrl: args.baseUrl,
     debug: args.debug,
     model: args.model,
+    onTranslationResult: shouldLogTranslations ? logTranslatedString : undefined,
   };
 
   console.info(
@@ -111,6 +151,7 @@ async function runTranslationService(
   );
   const translationService = await instantiateTService(args.service);
   const rawResults = await translationService.translateStrings(serviceArgs);
+  rawResults.forEach(logTranslatedString);
   return rawResults.map((rawResult) => {
     const cleanResult = reInsertInterpolations(
       rawResult.translated,
